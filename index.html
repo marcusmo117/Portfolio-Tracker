@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Tracker</title>
+    <link rel="stylesheet" href="./main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <header id="page-header" class="mt-3 mb-5 text-center">
+            <h1>Portfolio Tracker</h1>
+        </header>
+
+        <div id="add-ticker" class="mt-3 mb-5">
+            <input type="text" id="ticker-input"/>
+            <button type="button" id="button">Add Symbol</button>
+        </div>
+
+        <table class="table table-hover text-center">
+            <thead>
+              <tr>
+                <th scope="col">Symbol</th>
+                <th scope="col">Last price</th>
+                <th scope="col">Change</th>
+                <th scope="col">Chg %</th>
+                <th scope="col">Day high</th>
+                <th scope="col">Day low</th>
+                <th scope="col">Prv close</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <tr>
+                <td>AAPL</td>
+                <td>137.13</td>
+                <td>-5.51</td>
+                <td>-3.8629</td>
+                <td>140.76</td>
+                <td>137.06</td>
+                <td>142.64</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="row align-items-start text-center">
+            <div class="col">
+              <h4 id="ticker-news-header">Ticker news</h4>
+              <div id="news-list" class="list-group">
+              </div>
+            </div>
+            <div class="col">
+              <h4>Ticker information</h4>
+            </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
+</html>
