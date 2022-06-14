@@ -6,7 +6,7 @@ const apiKey = 'cai0r9aad3i7auh4hp40'
 const quoteUrl = 'https://finnhub.io/api/v1/quote?'
 const companyInfoUrl = 'https://finnhub.io/api/v1/stock/profile2?'
 const companyNewsUrl = 'https://finnhub.io/api/v1/company-news?' 
-const companyFinancials = 'https://finnhub.io/api/v1/stock/metric?symbol=AAPL&metric=all&token=' // optional, also hard coded for now 
+const companyFinancials = 'https://finnhub.io/api/v1/stock/metric?'  
 // can add earnings calendar 
 // can add social sentiment 
 const companyEps = 'https://finnhub.io/api/v1/stock/earnings?'
@@ -71,9 +71,9 @@ function inputSymbolToTable(symbol, data) {
     //adding news functionality when clicking
     tr.addEventListener("click", async() => {
       const responseNews = await fetchCompanyNewsApi(symbol)
-      const mainList = document.querySelector("#news-list")
       const tickerNews = document.querySelector("#ticker-news-header")
       tickerNews.innerText = symbol + " news"
+      const mainList = document.querySelector("#news-list")
       if (mainList.childElementCount === 0) {
         inputNewsIntoList(responseNews)
       } else {
@@ -90,6 +90,26 @@ function inputSymbolToTable(symbol, data) {
         inputNewsIntoList(responseNews)
       }
     })
+
+    // adding ticker information functionality when clicking (using loops for removing)
+    tr.addEventListener("click", async() => {
+      const responseFinancials = await fetchCompanyFinancials(symbol)
+      
+      const tickerInfo = document.querySelector('#ticker-information')
+      tickerInfo.innerText = symbol + ' information'
+      const infoTableLeft = document.querySelector('#ticker-info-left')
+      const infoTableRight = document.querySelector('#ticker-info-right')
+      if (infoTableLeft.childElementCount === 0) {
+        inputFinancialsIntoList(responseFinancials)
+      } else {
+        while (infoTableLeft.firstChild) {
+          infoTableLeft.removeChild(infoTableLeft.lastChild)
+          infoTableRight.removeChild(infoTableRight.lastChild)
+        }
+        inputFinancialsIntoList(responseFinancials)
+      }
+    })
+
 }
 
 document.querySelector("#button").addEventListener("click", async() => {
@@ -97,7 +117,11 @@ document.querySelector("#button").addEventListener("click", async() => {
     inputSymbolToTable(getInputValue(),response)
 })
 
-
+// async function testCoFinancials(symbol) {
+//   const responseFinancials = await fetchCompanyFinancials(symbol)
+//   inputFinancialsIntoList(responseFinancials)
+// }
+ 
 
 // to get today's date 
 const today = new Date();
@@ -154,14 +178,126 @@ function inputNewsIntoList(data) {
 }
 
 
+// to call Company Financials API
+async function fetchCompanyFinancials(symbol) {
+  const response = await fetch(companyFinancials + 'symbol=' + symbol +'&metric=all&token=' + apiKey);
+  const data = await response.json();
+  console.log('data: ', data['metric']['52WeekHigh'], data['metric']['52WeekHighDate'], data['metric']['52WeekLow'], data['metric']['52WeekLowDate'], data['metric']['marketCapitalization'], data['metric']['beta'], data['metric']['peBasicExclExtraTTM'], data['metric']['psTTM'], data['metric']['totalDebt/totalEquityAnnual'], data['metric']['roeTTM'])
+  return data
+}
+
+
+// input financials into list
+function inputFinancialsIntoList(data) {
+  // creating left side of ticker financials 
+  const tableLeft = document.querySelector("#ticker-info-left")
+
+    // creating table head
+    const headLeft = document.createElement("thead")
+    const trLeft = document.createElement("tr")
+    const column1Left = document.createElement("th")
+    column1Left.setAttribute("scope","col")
+    const column2Left = document.createElement("th")
+    column2Left.setAttribute("scope","col")
+    trLeft.appendChild(column1Left)
+    trLeft.appendChild(column2Left)
+    headLeft.appendChild(trLeft)
+    tableLeft.appendChild(headLeft)
+
+    // creating 1st row of table - 52 week high
+    const tBodyLeft = document.createElement("tbody")
+    const trLeft1 = document.createElement("tr")
+    const yearHigh = document.createElement("td")
+    yearHigh.textContent = "52-week high:"
+    const yearHighValue = document.createElement("td")
+    yearHighValue.textContent = data['metric']['52WeekHigh'] + " (" + data['metric']['52WeekHighDate'] + ")"
+    trLeft1.appendChild(yearHigh)
+    trLeft1.appendChild(yearHighValue)
+    tBodyLeft.appendChild(trLeft1)
+    tableLeft.appendChild(tBodyLeft)
+
+    // creating 2nd row of table - 52 week low
+    const trLeft2 = document.createElement("tr")
+    const yearLow = document.createElement("td")
+    yearLow.textContent = "52-week low:"
+    const yearLowValue = document.createElement("td")
+    yearLowValue.textContent = data['metric']['52WeekLow'] + " (" + data['metric']['52WeekLowDate'] + ")"
+    trLeft2.appendChild(yearLow)
+    trLeft2.appendChild(yearLowValue)
+    tBodyLeft.appendChild(trLeft2)
+     
+    // creating 3rd row of table - Market cap
+    const trLeft3 = document.createElement("tr")
+    const marketCap = document.createElement("td")
+    marketCap.textContent = "Market cap:"
+    const marketCapValue = document.createElement("td")
+    marketCapValue.textContent = data['metric']['marketCapitalization']
+    trLeft3.appendChild(marketCap)
+    trLeft3.appendChild(marketCapValue)
+    tBodyLeft.appendChild(trLeft3)
+
+    // creating 4th row of table - Beta
+    const trLeft4 = document.createElement("tr")
+    const beta = document.createElement("td")
+    beta.textContent = "Beta:"
+    const betaValue = document.createElement("td")
+    betaValue.textContent = data['metric']['beta']
+    trLeft4.appendChild(beta)
+    trLeft4.appendChild(betaValue)
+    tBodyLeft.appendChild(trLeft4)
+
+
+  // creating Right side of ticker financials
+  const tableRight = document.querySelector("#ticker-info-right")
+
+    // creating table head
+    const headRight = document.createElement("thead")
+    const trRight = document.createElement("tr")
+    const column1Right = document.createElement("th")
+    column1Right.setAttribute("scope","col")
+    const column2Right = document.createElement("th")
+    column2Right.setAttribute("scope","col")
+    trRight.appendChild(column1Right)
+    trRight.appendChild(column2Right)
+    headRight.appendChild(trRight)
+    tableRight.appendChild(headRight)
+
+    // creating 1st row of table - PE ratio
+    const tBodyRight = document.createElement("tbody")
+    const trRight1 = document.createElement("tr")
+    const peRatio = document.createElement("td")
+    peRatio.textContent = "P/E ratio (TTM):"
+    const peValue = document.createElement("td")
+    peValue.textContent = data['metric']['peBasicExclExtraTTM']
+    trRight1.appendChild(peRatio)
+    trRight1.appendChild(peValue)
+    tBodyRight.appendChild(trRight1)
+    tableRight.appendChild(tBodyRight)
+
+    // creating 2nd row of table - PS ratio (with function)
+    tableRowAdder('P/S ratio (TTM):', 'psTTM', data, tBodyRight)
+
+    // creating 3rd row of table - DE ratio (with function)
+    tableRowAdder('D/E ratio:', 'totalDebt/totalEquityAnnual', data, tBodyRight)
+
+    // creating 4th row of table - ROE (with function)
+    tableRowAdder('ROE (TTM):', 'roeTTM', data, tBodyRight)
+
+}
+
+
+function tableRowAdder(financialKey, apiKey, data, tBody) {
+  const tr = document.createElement("tr")
+  const financial = document.createElement("td")
+  financial.textContent = financialKey
+  const financialValue = document.createElement("td")
+  financialValue.textContent = data['metric'][apiKey]
+  tr.appendChild(financial)
+  tr.appendChild(financialValue)
+  tBody.appendChild(tr)
+}
 
 
 
 
-// testing function
-// function testFunction(url, symbol, key) {
-//     const test = url + 'symbol=' + symbol + '&token=' + key
-//     console.log(test)
-// }
 
-// testFunction(quoteUrl,'appl',apiKey)
