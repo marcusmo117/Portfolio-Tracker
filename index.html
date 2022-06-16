@@ -11,59 +11,99 @@
 </head>
 <body>
     <div class="container">
-        <header id="page-header" class="mt-3 mb-5 text-center">
-            <h1>Portfolio Tracker</h1>
-        </header>
-
-        <div id="add-ticker" class="mt-3 mb-5">
-            <input type="text" id="ticker-input"/>
-            <button type="button" id="button">Add Symbol</button>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand mb-0 h1">
+            <img src="./images/signature (1).png" alt="" width="150" height="50">
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active mb-0" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Holdings</a>
+              </li>
+              <!-- <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+              </li>
+            </ul>  -->
+            <!-- <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>  -->
+          </div>
         </div>
+      </nav>
+      <header id="page-header" class="mt-3 mb-5 text-center">
+          <h1>Portfolio Tracker</h1>
+      </header>
 
-        <table class="table table-hover text-center">
-            <thead>
-              <tr>
-                <th scope="col">Symbol</th>
-                <th scope="col">Last price</th>
-                <th scope="col">Change</th>
-                <th scope="col">Chg %</th>
-                <th scope="col">Day high</th>
-                <th scope="col">Day low</th>
-                <th scope="col">Prv close</th>
-              </tr>
-            </thead>
-            <tbody id="table-body">
-              <tr>
-                <td>AAPL</td>
-                <td>137.13</td>
-                <td>-5.51</td>
-                <td>-3.8629</td>
-                <td>140.76</td>
-                <td>137.06</td>
-                <td>142.64</td>
-              </tr>
-            </tbody>
-          </table>
+      <div id="add-ticker" class="mt-3 mb-5">
+          <input type="text" id="ticker-input"/>
+          <button type="btn" data-bs-toggle="tooltip" data-bs-placement="right" title="Click to add symbol" id="button">Add Symbol</button>
+      </div>
 
-          <div class="row align-items-start text-center">
-            <div class="col">
-              <h4 id="ticker-news-header">Ticker news</h4>
-              <div id="news-list" class="list-group">
+      <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">Symbol</th>
+              <th scope="col">Last price</th>
+              <th scope="col">Change</th>
+              <th scope="col">Chg %</th>
+              <th scope="col">Day high</th>
+              <th scope="col">Day low</th>
+              <th scope="col">Prv close</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td>AAPL</td>
+              <td>137.13</td>
+              <td>-5.51</td>
+              <td>-3.8629</td>
+              <td>140.76</td>
+              <td>137.06</td>
+              <td>142.64</td>
+              <td><button type="button" class="btn-close" aria-label="Close"></button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="row align-items-start text-center">
+          <div class="col">
+            <h4 id="ticker-news-header">Ticker news</h4>
+            <div id="news-list" class="list-group">
+            </div>
+          </div>
+          <div class="col">
+            <h4 id="ticker-information"> Ticker information</h4>
+            <div class="row align-items-start">
+              <div class="col" id="ticker-info-left-parent">
+                <!-- <table class="table table-hover text-center" id="ticker-info-left">
+                </table> -->
+              </div>
+              <div class="col" id="ticker-info-right-parent">
+                <!-- <table class="table table-hover text-center" id="ticker-info-right">
+                </table> -->
               </div>
             </div>
-            <div class="col">
-              <h4 id="ticker-information"> Ticker information</h4>
-              <div class="row align-items-start">
-                <div class="col">
-                  <table class="table table-hover text-center" id="ticker-info-left">
-                  </table>
-                </div>
-                <div class="col">
-                  <table class="table table-hover text-center" id="ticker-info-right">
-                  </table>
-                </div>
-              </div>
-            </div>
+          </div>
     </div>
 
     <script src="./main.js"></script>

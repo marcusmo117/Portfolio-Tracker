@@ -32,6 +32,17 @@ function getInputValue() {
     return inputValue
 }
 
+// to save input value in local storage --> ISSUE HERE
+
+function saveInputValue() {
+  const symbols = []
+  const toAdd = JSON.parse(localStorage.getItem("tickers"))
+  symbols.push(toAdd)
+  const saveValue = document.getElementById("ticker-input").value
+  symbols.push(saveValue)
+  localStorage.setItem("tickers", JSON.stringify(symbols))
+} 
+
 // to call quote api 
 async function fetchQuoteApi(symbol) {
     const response = await fetch(quoteUrl + 'symbol=' + symbol + '&token=' + apiKey);
@@ -59,6 +70,12 @@ function inputSymbolToTable(symbol, data) {
     dayLow.textContent = data['l']
     const prevClose = document.createElement("td")
     prevClose.textContent = data['pc']
+    const deleteTd = document.createElement("td")
+    const deleteBtn = document.createElement("button")
+    deleteBtn.setAttribute("type", "button")
+    deleteBtn.setAttribute("class", "btn-close")
+    deleteBtn.setAttribute("aria-label", "Close")
+    deleteTd.appendChild(deleteBtn)
     tr.appendChild(newSymbol)
     tr.appendChild(lastPrice)
     tr.appendChild(change)
@@ -66,6 +83,7 @@ function inputSymbolToTable(symbol, data) {
     tr.appendChild(dayHigh)
     tr.appendChild(dayLow)
     tr.appendChild(prevClose)
+    tr.appendChild(deleteTd)
     tBody.appendChild(tr)
 
     //adding news functionality when clicking
@@ -97,8 +115,8 @@ function inputSymbolToTable(symbol, data) {
       
       const tickerInfo = document.querySelector('#ticker-information')
       tickerInfo.innerText = symbol + ' information'
-      const infoTableLeft = document.querySelector('#ticker-info-left')
-      const infoTableRight = document.querySelector('#ticker-info-right')
+      const infoTableLeft = document.querySelector('#ticker-info-left-parent')
+      const infoTableRight = document.querySelector('#ticker-info-right-parent')
       if (infoTableLeft.childElementCount === 0) {
         inputFinancialsIntoList(responseFinancials)
       } else {
@@ -110,17 +128,52 @@ function inputSymbolToTable(symbol, data) {
       }
     })
 
+    // adding delete button 
+    deleteBtn.addEventListener("click", (event) => {
+
+      // removing row in table
+      event.stopPropagation()
+      tr.remove()
+
+      // removing financial info
+      const tickerInfo = document.querySelector('#ticker-information')
+      tickerInfo.innerText = 'Ticker information'
+      const infoTableLeft = document.querySelector('#ticker-info-left')
+      const infoTableRight = document.querySelector('#ticker-info-right')
+      infoTableLeft.remove()
+      infoTableRight.remove()
+      
+      // removing news 
+      const tickerNews = document.querySelector("#ticker-news-header")
+      tickerNews.innerText = "Ticker news"
+      const mainList = document.querySelector("#news-list")
+      const news1 = mainList.children[0]
+      const news2 = mainList.children[1]
+      const news3 = mainList.children[2]
+      const news4 = mainList.children[3]
+      const news5 = mainList.children[4]
+      news1.remove();
+      news2.remove();
+      news3.remove();
+      news4.remove();
+      news5.remove();
+
+      // // removing symbol from local storage
+      // const identifyTicker = tr.textContent
+      // const symbols1 = symbols.filter(ticker => ticker !== identifyTicker)
+      // localStorage.setItem("tickers", JSON.stringify(symbols1))
+      // console.log('test symbol getting deleted')
+    })
+
 }
 
+// Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
     const response = await fetchQuoteApi(getInputValue())
     inputSymbolToTable(getInputValue(),response)
+    saveInputValue()
 })
 
-// async function testCoFinancials(symbol) {
-//   const responseFinancials = await fetchCompanyFinancials(symbol)
-//   inputFinancialsIntoList(responseFinancials)
-// }
  
 
 // to get today's date 
@@ -190,7 +243,11 @@ async function fetchCompanyFinancials(symbol) {
 // input financials into list
 function inputFinancialsIntoList(data) {
   // creating left side of ticker financials 
-  const tableLeft = document.querySelector("#ticker-info-left")
+  const tableLeftParent = document.querySelector("#ticker-info-left-parent")
+  const tableLeft = document.createElement("table")
+  tableLeft.setAttribute("class", "table table-hover text-center")
+  tableLeft.setAttribute("id", "ticker-info-left")
+  tableLeftParent.appendChild(tableLeft)
 
     // creating table head
     const headLeft = document.createElement("thead")
@@ -248,7 +305,11 @@ function inputFinancialsIntoList(data) {
 
 
   // creating Right side of ticker financials
-  const tableRight = document.querySelector("#ticker-info-right")
+  const tableRightParent = document.querySelector("#ticker-info-right-parent")
+  const tableRight = document.createElement("table")
+  tableRight.setAttribute("class", "table table-hover text-center")
+  tableRight.setAttribute("id", "ticker-info-right")
+  tableRightParent.appendChild(tableRight)
 
     // creating table head
     const headRight = document.createElement("thead")
@@ -296,8 +357,6 @@ function tableRowAdder(financialKey, apiKey, data, tBody) {
   tr.appendChild(financialValue)
   tBody.appendChild(tr)
 }
-
-
 
 
 
