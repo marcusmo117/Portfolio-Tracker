@@ -28,20 +28,10 @@ async function fetchDataAsync(url, symbol, key) {
 // to retrieve input value 
 function getInputValue() {
     const inputValue = document.getElementById("ticker-input").value
-    console.log(inputValue)
+    // console.log(inputValue)
     return inputValue
 }
 
-// to save input value in local storage --> ISSUE HERE
-
-function saveInputValue() {
-  const symbols = []
-  const toAdd = JSON.parse(localStorage.getItem("tickers"))
-  symbols.push(toAdd)
-  const saveValue = document.getElementById("ticker-input").value
-  symbols.push(saveValue)
-  localStorage.setItem("tickers", JSON.stringify(symbols))
-} 
 
 // to call quote api 
 async function fetchQuoteApi(symbol) {
@@ -131,6 +121,10 @@ function inputSymbolToTable(symbol, data) {
     // adding delete button 
     deleteBtn.addEventListener("click", (event) => {
 
+
+      // removing ticker from local storage 
+      deleteInputValue(JSON.stringify(tr.id))
+
       // removing row in table
       event.stopPropagation()
       tr.remove()
@@ -176,13 +170,24 @@ document.querySelector("#button").addEventListener("click", async() => {
 
  
 
-// to get today's date 
+// to get today's date and time
 const today = new Date();
 const dd = String(today.getDate()).padStart(2, '0');
 const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
 const yyyy = today.getFullYear();
 const todayDate = yyyy + '-' + mm + '-' + dd;
 console.log(todayDate)
+
+// setting date-time refresh (interval)
+const zeroFill = n => {
+  return ('0' + n).slice(-2);
+}
+const interval = setInterval(() => {
+  const today = new Date();
+  const time = zeroFill(today.getHours()) + ":" + zeroFill(today.getMinutes()) + ":" + zeroFill(today.getSeconds());
+  const dateTime = todayDate + ' ' + time
+  document.getElementById('date-time').innerHTML = dateTime;
+  }, 1000);
 
 // to call company news api 
 async function fetchCompanyNewsApi(symbol) {
