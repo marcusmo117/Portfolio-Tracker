@@ -122,6 +122,103 @@ function inputSymbolToTable(symbol, data) {
     modalSvg.appendChild(modalSvgPath1)
     modalButton.appendChild(modalSvg)
 
+    // dynamically creating modal (for each asset)
+    const mainBody = document.querySelector("#main-body")
+    const modDiv1 = document.createElement("div")
+        modDiv1.setAttribute("class", "modal fade")
+        modDiv1.setAttribute("id", symbol+"modal")
+        modDiv1.setAttribute("tabindex", "-1")
+        modDiv1.setAttribute("aria-labelledby", "exampleModalLabel")
+        modDiv1.setAttribute("aria-hidden", "true")
+    const modDiv2 = document.createElement("div")
+        modDiv2.setAttribute("class", "modal-dialog")
+    const modDiv3 = document.createElement("div")
+        modDiv3.setAttribute("class", "modal-content")
+    const modHeader = document.createElement("div")
+        modHeader.setAttribute("class", "modal-header")
+    const modHeadTitle = document.createElement("h5")
+        modHeadTitle.setAttribute("class", "modal-title")
+        modHeadTitle.setAttribute("id", "exampleModalLabel")
+        modHeadTitle.textContent = "New " + symbol + " holding"
+    const modHeadBtn = document.createElement("button")
+        modHeadBtn.setAttribute("type", "button")
+        modHeadBtn.setAttribute("class", "btn-close")
+        modHeadBtn.setAttribute("data-bs-dismiss", "modal")
+        modHeadBtn.setAttribute("aria-label", "Close")
+    modHeader.appendChild(modHeadTitle)
+    modHeader.appendChild(modHeadBtn)
+    const modBody = document.createElement("div")
+        modBody.setAttribute("class", "modal-body")
+    const modBodyInp1 = document.createElement("form")
+        modBodyInp1.setAttribute("class", "form-floating mb-3")
+    const modBodyInp1Text = document.createElement("input")
+        modBodyInp1Text.setAttribute("type", "text")
+        modBodyInp1Text.setAttribute("class", "form-control")
+        modBodyInp1Text.setAttribute("id", symbol+"DateInputValue")
+        modBodyInp1Text.setAttribute("placeholder", "YYYY-MM-DD")
+        modBodyInp1Text.setAttribute("value", "YYYY-MM-DD")
+    const modBodyInp1Label = document.createElement("label")
+        modBodyInp1Label.setAttribute("for", "DateInputValue")
+        modBodyInp1Label.textContent = "Trade Date:"
+    modBodyInp1.appendChild(modBodyInp1Text)
+    modBodyInp1.appendChild(modBodyInp1Label)
+    modBody.appendChild(modBodyInp1)
+    const modBodyInp2 = document.createElement("form")
+        modBodyInp2.setAttribute("class", "form-floating mb-3")
+    const modBodyInp2Text = document.createElement("input")
+        modBodyInp2Text.setAttribute("type", "text")
+        modBodyInp2Text.setAttribute("class", "form-control")
+        modBodyInp2Text.setAttribute("id", symbol+"SharesInputValue")
+        modBodyInp2Text.setAttribute("placeholder", "No. of shares")
+        modBodyInp2Text.setAttribute("value", "No. of shares")
+    const modBodyInp2Label = document.createElement("label")
+        modBodyInp2Label.setAttribute("for", "SharesInputValue")
+        modBodyInp2Label.textContent = "Shares:"
+    modBodyInp2.appendChild(modBodyInp2Text)
+    modBodyInp2.appendChild(modBodyInp2Label)
+    modBody.appendChild(modBodyInp2)
+    const modBodyInp3 = document.createElement("form")
+        modBodyInp3.setAttribute("class", "form-floating mb-3")
+    const modBodyInp3Text = document.createElement("input")
+        modBodyInp3Text.setAttribute("type", "text")
+        modBodyInp3Text.setAttribute("class", "form-control")
+        modBodyInp3Text.setAttribute("id", symbol+"CostInputValue")
+        modBodyInp3Text.setAttribute("placeholder", "Avg. cost/share")
+        modBodyInp3Text.setAttribute("value", "Avg. cost/share")
+    const modBodyInp3Label = document.createElement("label")
+        modBodyInp3Label.setAttribute("for", "CostInputValue")
+        modBodyInp3Label.textContent = "Cost/share:"
+    modBodyInp3.appendChild(modBodyInp3Text)
+    modBodyInp3.appendChild(modBodyInp3Label)
+    modBody.appendChild(modBodyInp3)
+    const modFooter = document.createElement("div")
+        modFooter.setAttribute("class", "modal-footer")
+    const modFooterbtn1 = document.createElement("button")
+        modFooterbtn1.setAttribute("type", "button")
+        modFooterbtn1.setAttribute("class", "btn btn-secondary")
+        modFooterbtn1.setAttribute("data-bs-dismiss", "modal")
+        modFooterbtn1.textContent = "Just kidding"
+    const modFooterbtn2 = document.createElement("button")
+        modFooterbtn2.setAttribute("type", "button")
+        modFooterbtn2.setAttribute("class", "btn btn-primary")
+        modFooterbtn2.setAttribute("data-bs-dismiss", "modal")
+        modFooterbtn2.textContent = "Add " + symbol
+    modFooter.appendChild(modFooterbtn1)
+    modFooter.appendChild(modFooterbtn2)
+    modDiv3.appendChild(modHeader)
+    modDiv3.appendChild(modBody)
+    modDiv3.appendChild(modFooter)
+    modDiv2.appendChild(modDiv3)
+    modDiv1.appendChild(modDiv2)
+    mainBody.appendChild(modDiv1)
+    // modal functionallity 
+    modFooterbtn2.addEventListener("click", () => {
+        saveModal(symbol)
+        // retrieveHoldingsOne(symbol)
+        retrieveHoldings()
+        location.reload()
+    })
+
     // adding table data 
     const newSymbol = document.createElement("td")
     newSymbol.textContent = symbol
@@ -257,7 +354,6 @@ document.querySelector("#button").addEventListener("click", async() => {
     saveInputValue()
 })
 
- 
 
 // to get today's date and time
 const today = new Date();
@@ -452,5 +548,122 @@ function tableRowAdder(financialKey, apiKey, data, tBody) {
   tBody.appendChild(tr)
 }
 
+
+// holdings page functionalities
+// saving info from modal 
+function saveModal(symbol) {
+    const array = []
+    let existingData = JSON.parse(localStorage.getItem("holdings"))
+    const saveTradeDate = document.getElementById(symbol+"DateInputValue").value
+    const saveShares = document.getElementById(symbol+"SharesInputValue").value
+    const saveCost = document.getElementById(symbol+"CostInputValue").value
+    const uuid = crypto.randomUUID()
+    array.push(symbol)
+    array.push(saveTradeDate)
+    array.push(saveShares)
+    array.push(saveCost)
+    array.push(uuid)
+    if (existingData === null){
+        existingData = []
+        existingData.push(array)
+        localStorage.setItem("holdings", JSON.stringify(existingData))
+    } else {
+        existingData.push(array)
+        localStorage.setItem("holdings", JSON.stringify(existingData))
+    }
+}
+
+// adding holdings to table (all at once)
+function retrieveHoldings() {
+    const data = JSON.parse(localStorage.getItem("holdings"))
+    for (i=0; i<data.length; i++) {
+        this["row"+i] = data[i][0]
+        // console.log(this["row"+i]) 
+        const holdingsDropdown = document.getElementById(this["row"+i]+"dropdown")
+        // console.log(holdingsTradeDate)
+        const holdingsData = document.createElement("tr")
+        if (holdingsDropdown.className === "collapse") {
+            holdingsData.setAttribute("class", "collapse")
+        } else {
+            holdingsData.setAttribute("class", "collapse show")
+        }
+        holdingsData.setAttribute("id", this["row"+i]+"dropdown")
+        const holdingsDataDate = document.createElement("td")
+        holdingsDataDate.setAttribute("colspan", "4")
+        holdingsDataDate.textContent = data[i][1]
+        const holdingsDataShares = document.createElement("td")
+        holdingsDataShares.textContent = data[i][2]
+        const holdingsDataCost = document.createElement("td")
+        holdingsDataCost.textContent = data[i][3]
+        const holdingsDataMktVal = document.createElement("td")
+        holdingsDataMktVal.setAttribute("colspan", "2")
+        holdingsDataMktVal.textContent = Math.round(parseFloat(holdingsDataShares.textContent, 10) * parseFloat(holdingsDataCost.textContent, 10))
+        // adding delete button + functionality
+        const deleteTd = document.createElement("td")
+        const deleteBtn = document.createElement("button")
+        deleteBtn.setAttribute("type", "button")
+        deleteBtn.setAttribute("class", "btn-close")
+        deleteBtn.setAttribute("id", data[i][4])
+        deleteBtn.setAttribute("aria-label", "Close")
+        deleteTd.appendChild(deleteBtn)
+        deleteBtn.addEventListener("click", (event) => {
+        // removing ticker from local storage 
+        // deleteInputValue(JSON.stringify(tr.id))
+            deleteHoldingsRow(deleteBtn.id)     
+            holdingsData.remove()
+        })
+        holdingsData.appendChild(holdingsDataDate)
+        holdingsData.appendChild(holdingsDataShares)
+        holdingsData.appendChild(holdingsDataCost)
+        holdingsData.appendChild(holdingsDataMktVal)
+        holdingsData.appendChild(deleteTd)
+        insertAfter(holdingsData, holdingsDropdown)
+        // console.log('retrieve holdings working')
+        }
+}
+
+// function to insert node after element
+function insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
+}
+
+
+
+// // adding holdings to table (one by one) --> on hold because don't need (just reload page)
+// function retrieveHoldingsOne(symbol) {
+//     const tradeDate = document.getElementById(symbol+"DateInputValue").value
+//     const shares = document.getElementById(symbol+"SharesInputValue").value
+//     const cost = document.getElementById(symbol+"CostInputValue").value
+//     const holdingsDropdown = document.getElementById(symbol+"dropdown")
+//     const holdingsData = document.createElement("tr")
+//     if (holdingsDropdown.className === "collapse") {
+//         holdingsData.setAttribute("class", "collapse")
+//     } else {
+//         holdingsData.setAttribute("class", "collapse show")
+//     }
+//     holdingsData.setAttribute("id", symbol+"dropdown")
+//     const holdingsDataDate = document.createElement("td")
+//     holdingsDataDate.setAttribute("colspan", "4")
+//     holdingsDataDate.textContent = tradeDate
+//     const holdingsDataShares = document.createElement("td")
+//     holdingsDataShares.textContent = shares
+//     const holdingsDataCost = document.createElement("td")
+//     holdingsDataCost.textContent = cost
+//     // adding delete button + functionality
+//     const deleteTd = document.createElement("td")
+//     const deleteBtn = document.createElement("button")
+//     deleteBtn.setAttribute("type", "button")
+//     deleteBtn.setAttribute("class", "btn-close")
+//     deleteBtn.setAttribute("aria-label", "Close")
+//     deleteTd.appendChild(deleteBtn)
+//     deleteBtn.addEventListener("click", (event) => {
+//         holdingsData.remove()
+//     })
+//     holdingsData.appendChild(holdingsDataDate)
+//     holdingsData.appendChild(holdingsDataShares)
+//     holdingsData.appendChild(holdingsDataCost)
+//     holdingsData.appendChild(deleteTd)
+//     insertAfter(holdingsData, holdingsDropdown)
+// }
 
 

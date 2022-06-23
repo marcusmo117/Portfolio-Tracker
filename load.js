@@ -24,6 +24,7 @@ window.onload = async () => {
         inputSymbolToTable(symbolsToLoad[i],response)
         // saveInputValue()
     }
+    retrieveHoldings()
 }
 
 function deleteInputValue(ticker) {
@@ -38,3 +39,14 @@ function deleteInputValue(ticker) {
         }
     }
 }   
+
+function deleteHoldingsRow(identifier) {
+    const holdingsData = JSON.parse(localStorage.getItem("holdings"))
+    for (let i=0; i<holdingsData.length; i++) {
+        if (holdingsData[i][4] === identifier) {
+            holdingsData.splice(i,1)
+            console.log(holdingsData)
+            localStorage.setItem("holdings", JSON.stringify(holdingsData))
+        }
+    }
+}
