@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Tracker</title>
+    <link rel="stylesheet" href="./main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand mb-0 h1">
+            <img src="./images/signature (1).png" alt="" width="150" height="50">
+          </a>
+          <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button> -->
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active mb-0" aria-current="page" href="./index.html">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./holdings.html">Holdings</a>
+              </li>
+            </ul>
+            <span class="navbar-text">
+              <a id="date-time"></a>  
+            </span>
+              <!-- <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+              </li>
+            <!-- <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>  -->
+          </div>
+        </div>
+      </nav>
+      <header id="page-header" class="mt-3 mb-5 text-center">
+          <h1>Holdings</h1>
+      </header>
+
+      <div id="add-ticker" class="mt-3 mb-5">
+          <input type="text" id="ticker-input"/>
+          <button type="btn" data-bs-toggle="tooltip" data-bs-placement="right" title="Click to add symbol" id="button">Add Symbol</button>
+      </div>
+
+      <table class="table table-hover text-center table accordion">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col"></th>  
+              <th scope="col">Symbol</th>
+              <th scope="col">Last price</th>
+              <th scope="col">Change %</th>
+              <th scope="col">Shares</th>
+              <th scope="col">Avg. cost/share</th>
+              <th scope="col">Market value</th>
+              <th scope="col">Day gain</th>
+              <th scope="col">Day gain %</th>
+              <th scope="col">Total gain</th>
+              <th scope="col">Total gain %</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td data-bs-toggle="collapse" data-bs-target="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-square" viewBox="0 0 16 16">
+                    <path d="M3.626 6.832A.5.5 0 0 1 4 6h8a.5.5 0 0 1 .374.832l-4 4.5a.5.5 0 0 1-.748 0l-4-4.5z"/>
+                    <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2z"/>
+                </svg>
+              </td>
+              <td data-bs-toggle="modal" data-bs-target="#exampleModal" role="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                </svg>
+              </td>
+              <td>AAPL</td>
+              <td>137.13</td>
+              <td>-5.51</td>
+              <td>10</td>
+              <td>100</td>
+              <td>1000</td>
+              <td>-3</td>
+              <td>-0.3</td>
+              <td>37.13</td>
+              <td>37%</td>
+              <td><button type="button" class="btn-close" aria-label="Close"></button></td>
+            </tr>
+            <tr class="collapse" id="collapseExample">
+                <th scope="col" colspan="4">Trade date</th>  
+                <th scope="col">Shares</th>
+                <th scope="col">Cost/share</th>
+                <th scope="col" colspan="2">Market value</th>
+                <th scope="col" colspan="2">Day gain (%)</th>
+                <th scope="col" colspan="2">Total gain (%)</th>
+                <th scope="col"></th>
+            </tr>
+            <tr class="collapse" id="collapseExample">
+                <td colspan="4">2022-06-19</td>  
+                <td>10</td>
+                <td>100</td>
+                <td colspan="2">1371.3</td>
+                <td colspan="2">-3 (0.3)</td>
+                <td colspan="2">37.13 (0.37)</td>
+                <td><button type="button" class="btn-close" aria-label="Close"></button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!--modal functionality-->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">New holding</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form class="form-floating mb-3">
+                    <input type="text" class="form-control" id="DateInputValue" placeholder="YYYY-MM-DD" value="YYYY-MM-DD">
+                    <label for="DateInputValue">Trade date:</label>
+                  </form>
+                  <form class="form-floating mb-3">
+                    <input type="text" class="form-control" id="SharesInputValue" placeholder="No. of shares" value="No. of shares">
+                    <label for="DateInputValue">Shares:</label>
+                  </form>
+                  <form class="form-floating mb-3">
+                    <input type="text" class="form-control" id="CostInputValue" placeholder="Avg. cost/share" value="Avg. cost/share">
+                    <label for="DateInputValue">Cost/share:</label>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Just kidding</button>
+                  <button type="button" class="btn btn-primary">Add holding</button>
+                </div>
+              </div>
+            </div>
+        </div>  
+
+        <div class="row align-items-start text-center">
+          <div class="col">
+            <h4 id="ticker-news-header">Custom graph</h4>
+            <div id="news-list" class="list-group">
+            </div>
+          </div>
+          <div class="col">
+            <h4 id="ticker-information">Custom graph 2/ Holdings summary</h4>
+            <div class="row align-items-start">
+              <div class="col" id="ticker-info-left-parent">
+                <!-- <table class="table table-hover text-center" id="ticker-info-left">
+                </table> -->
+              </div>
+              <div class="col" id="ticker-info-right-parent">
+                <!-- <table class="table table-hover text-center" id="ticker-info-right">
+                </table> -->
+              </div>
+            </div>
+          </div>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+    <script src="./holdings.js"></script>
+    <script src="./load.js"></script>
+</body>
+</html>
