@@ -231,54 +231,63 @@ function inputSymbolToTable(symbol, data) {
     changePercent.setAttribute("id", symbol + "change%")
     changePercent.textContent = data['dp']
     const shares = document.createElement("td")
-    // for determining total shares from local storage
+    // calculations portion
     const ttlSharesData = JSON.parse(localStorage.getItem("holdings"))
-    let ttlShares = 0
-    for (k=0; k<ttlSharesData.length; k++) {
-        this["Share"+k] = ttlSharesData[k][0]
-        if (tr.id === this["Share"+k]) {
-            ttlShares += parseFloat(ttlSharesData[k][2], 10)
-        } else {
-            ttlShares = ttlShares
-        }
-        // console.log(symbol + " shares:" + ttlShares)
-    }
-    shares.textContent = ttlShares
-    // for determining avg cost/share from local storage 
     const avgCost = document.createElement("td")
-    let ttlCost = 0
-    for (j=0; j<ttlSharesData.length; j++) {
-        this["Cost"+j] = ttlSharesData[j][0]
-        if (tr.id === this["Cost"+j]) {
-            ttlCost += parseFloat(ttlSharesData[j][2], 10) * parseFloat(ttlSharesData[j][3], 10)
-        } else {
-            ttlCost = ttlCost
-        }
-        // console.log(symbol + " total cost:" + ttlCost)
-    }
-    avgCost.textContent = roundToTwo((ttlCost / ttlShares))
-    // for determining mkt value
     const mktValue = document.createElement("td")
-    mktValue.textContent = roundToTwo((parseFloat(lastPrice.textContent, 10) * parseFloat(shares.textContent, 10)))
-    // for determining day gain and %
     const dayGain = document.createElement("td")
-    dayGain.textContent = roundToTwo((parseFloat(mktValue.textContent, 10) / (100 + parseFloat(changePercent.textContent,10))) * parseFloat(changePercent.textContent, 10))
     const dayGainPer = document.createElement("td")
-    dayGainPer.textContent = data['dp']
-    // for determining ttl gain and %
     const ttlGain = document.createElement("td")
-    ttlGain.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10)) - (parseFloat(avgCost.textContent, 10))) * (ttlShares))
     const ttlGainPer = document.createElement("td")
-    ttlGainPer.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10) - parseFloat(avgCost.textContent, 10)) / parseFloat(avgCost.textContent, 10)) * 100)
-
-    // validation for no holdigs (market value = 0)
-    if (mktValue.textContent === "0") {
-        dayGain.textContent = 0
-        dayGainPer.textContent = 0
-        ttlGain.textContent = 0
-        ttlGainPer.textContent = 0
-    }
-
+    if (ttlSharesData) {
+        // for determining total shares from local storage
+        let ttlShares = 0
+        for (k=0; k<ttlSharesData.length; k++) {
+            this["Share"+k] = ttlSharesData[k][0]
+            if (tr.id === this["Share"+k]) {
+                ttlShares += parseFloat(ttlSharesData[k][2], 10)
+            } else {
+                ttlShares = ttlShares
+            }
+            // console.log(symbol + " shares:" + ttlShares)
+        }
+        shares.textContent = ttlShares
+        // for determining avg cost/share from local storage 
+        // const avgCost = document.createElement("td")
+        let ttlCost = 0
+        for (j=0; j<ttlSharesData.length; j++) {
+            this["Cost"+j] = ttlSharesData[j][0]
+            if (tr.id === this["Cost"+j]) {
+                ttlCost += parseFloat(ttlSharesData[j][2], 10) * parseFloat(ttlSharesData[j][3], 10)
+            } else {
+                ttlCost = ttlCost
+            }
+            // console.log(symbol + " total cost:" + ttlCost)
+        }
+        avgCost.textContent = roundToTwo((ttlCost / ttlShares))
+        // for determining mkt value
+        // const mktValue = document.createElement("td")
+        mktValue.textContent = roundToTwo((parseFloat(lastPrice.textContent, 10) * parseFloat(shares.textContent, 10)))
+        // for determining day gain and %
+        // const dayGain = document.createElement("td")
+        dayGain.textContent = roundToTwo((parseFloat(mktValue.textContent, 10) / (100 + parseFloat(changePercent.textContent,10))) * parseFloat(changePercent.textContent, 10))
+        // const dayGainPer = document.createElement("td")
+        dayGainPer.textContent = data['dp']
+        // for determining ttl gain and %
+        // const ttlGain = document.createElement("td")
+        ttlGain.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10)) - (parseFloat(avgCost.textContent, 10))) * (ttlShares))
+        // const ttlGainPer = document.createElement("td")
+        ttlGainPer.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10) - parseFloat(avgCost.textContent, 10)) / parseFloat(avgCost.textContent, 10)) * 100)
+    
+        // validation for no holdigs (market value = 0)
+        if (mktValue.textContent === "0") {
+            dayGain.textContent = 0
+            dayGainPer.textContent = 0
+            ttlGain.textContent = 0
+            ttlGainPer.textContent = 0
+        }
+    } else {}
+    
     // adding delete button icon 
     const deleteTd = document.createElement("td")
     const deleteBtn = document.createElement("button")
