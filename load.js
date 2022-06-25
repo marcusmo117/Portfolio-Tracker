@@ -22,7 +22,6 @@ window.onload = async () => {
     for (i=0; i<symbolsToLoad.length; i++) {
         const response = await fetchQuoteApi(symbolsToLoad[i])
         inputSymbolToTable(symbolsToLoad[i],response)
-        // saveInputValue()
     }
     retrieveHoldings()
 }

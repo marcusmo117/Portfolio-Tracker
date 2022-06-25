@@ -234,30 +234,50 @@ function inputSymbolToTable(symbol, data) {
     // for determining total shares from local storage
     const ttlSharesData = JSON.parse(localStorage.getItem("holdings"))
     let ttlShares = 0
-    for (i=0; i<ttlSharesData.length; i++) {
-        this["shareRow"+i] = ttlSharesData[i][0]
-        if (tr.id === this["shareRow"+i]) {
-            ttlShares += ttlShares[i][2]
+    for (k=0; k<ttlSharesData.length; k++) {
+        this["Share"+k] = ttlSharesData[k][0]
+        if (tr.id === this["Share"+k]) {
+            ttlShares += parseFloat(ttlSharesData[k][2], 10)
         } else {
-            ttlShares = "-"
+            ttlShares = ttlShares
         }
+        // console.log(symbol + " shares:" + ttlShares)
     }
-    console.log(symbol + " shares:" + ttlShares )
-
-
-    // shares.textContent = data['h']
+    shares.textContent = ttlShares
+    // for determining avg cost/share from local storage 
     const avgCost = document.createElement("td")
-    // avgCost.textContent = data['l']
+    let ttlCost = 0
+    for (j=0; j<ttlSharesData.length; j++) {
+        this["Cost"+j] = ttlSharesData[j][0]
+        if (tr.id === this["Cost"+j]) {
+            ttlCost += parseFloat(ttlSharesData[j][2], 10) * parseFloat(ttlSharesData[j][3], 10)
+        } else {
+            ttlCost = ttlCost
+        }
+        // console.log(symbol + " total cost:" + ttlCost)
+    }
+    avgCost.textContent = roundToTwo((ttlCost / ttlShares))
+    // for determining mkt value
     const mktValue = document.createElement("td")
-    // mktValue.textContent = data['pc']
+    mktValue.textContent = roundToTwo((parseFloat(lastPrice.textContent, 10) * parseFloat(shares.textContent, 10)))
+    // for determining day gain and %
     const dayGain = document.createElement("td")
-    // dayGain.textContent = data['pc']
+    dayGain.textContent = roundToTwo((parseFloat(mktValue.textContent, 10) / (100 + parseFloat(changePercent.textContent,10))) * parseFloat(changePercent.textContent, 10))
     const dayGainPer = document.createElement("td")
-    // dayGainPer.textContent = data['pc']
+    dayGainPer.textContent = data['dp']
+    // for determining ttl gain and %
     const ttlGain = document.createElement("td")
-    // ttlGain.textContent = data['pc']
+    ttlGain.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10)) - (parseFloat(avgCost.textContent, 10))) * (ttlShares))
     const ttlGainPer = document.createElement("td")
-    // ttlGainPer.textContent = data['pc']
+    ttlGainPer.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10) - parseFloat(avgCost.textContent, 10)) / parseFloat(avgCost.textContent, 10)) * 100)
+
+    // validation for no holdigs (market value = 0)
+    if (mktValue.textContent === "0") {
+        dayGain.textContent = 0
+        dayGainPer.textContent = 0
+        ttlGain.textContent = 0
+        ttlGainPer.textContent = 0
+    }
 
     // adding delete button icon 
     const deleteTd = document.createElement("td")
@@ -589,8 +609,6 @@ function saveModal(symbol) {
     }
 }
 
-const holdingsDataLocal = JSON.parse(localStorage.getItem("holdings"))
-
 // adding holdings to table (all at once)
 function retrieveHoldings() {
     const data = JSON.parse(localStorage.getItem("holdings"))
@@ -618,14 +636,14 @@ function retrieveHoldings() {
         const liveLastP = document.getElementById(this["row"+i] + "last-price")
         const holdingsDataMktVal = document.createElement("td")
         holdingsDataMktVal.setAttribute("colspan", "2")
-        holdingsDataMktVal.textContent = Math.round(parseFloat(holdingsDataShares.textContent, 10) * parseFloat(holdingsDataCost.textContent, 10))
+        holdingsDataMktVal.textContent = roundToTwo(parseFloat(holdingsDataShares.textContent, 10) * parseFloat(liveLastP.textContent, 10))
         const holdingsDataDay = document.createElement("td")
         holdingsDataDay.setAttribute("colspan", "2")
-        holdingsDataDay.textContent = Math.round(parseFloat(holdingsDataMktVal.textContent, 10) * parseFloat(liveChangePer.textContent, 10) * 0.01) + " (" + parseFloat(liveChangePer.textContent, 10).toFixed(2) + ")"
+        holdingsDataDay.textContent = roundToTwo((parseFloat(holdingsDataMktVal.textContent, 10) / ((parseFloat(liveChangePer.textContent, 10)) + 100))* (parseFloat(liveChangePer.textContent, 10))) + " (" + roundToTwo(parseFloat(liveChangePer.textContent, 10)) + ")"
         const holdingsDataTtl = document.createElement("td")
         holdingsDataTtl.setAttribute("colspan", "2")
-        const totalGainForm = Math.round((parseFloat(liveLastP.textContent, 10) - parseFloat(holdingsDataCost.textContent, 10)) * parseFloat(holdingsDataShares.textContent, 10))
-        holdingsDataTtl.textContent = totalGainForm + " (" + 100*(totalGainForm / (parseFloat(holdingsDataMktVal.textContent, 10))).toFixed(4) + ")"
+        const totalGainForm = roundToTwo((parseFloat(liveLastP.textContent, 10) - parseFloat(holdingsDataCost.textContent, 10)) * parseFloat(holdingsDataShares.textContent, 10))
+        holdingsDataTtl.textContent = totalGainForm + " (" + roundToTwo(100*(totalGainForm / (parseFloat(holdingsDataMktVal.textContent, 10)))) + ")"
         // adding delete button + functionality
         const deleteTd = document.createElement("td")
         const deleteBtn = document.createElement("button")
@@ -657,24 +675,10 @@ function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
 }
 
-
-//  // for determining total shares from local storage
-//  function test1() {
-//     const ttlSharesData = JSON.parse(localStorage.getItem("holdings"))
-//     let ttlShares = 0
-//     for (i=0; i<ttlSharesData.length; i++) {
-//         this["shareRow"+i] = ttlSharesData[i][0]
-//         console.log(this["shareRow"+i])
-//         // if (tr.id === this["shareRow"+i]) {
-//         //     ttlShares += ttlShares[i][2]
-//         // } else {
-//         //     ttlShares = "-"
-//         // }
-//     }
-//  }
-
-//  test1()
-
+// function to round to dp
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2")  + "e-2");
+}
 
 
 
