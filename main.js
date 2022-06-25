@@ -46,6 +46,7 @@ function inputSymbolToTable(symbol, data) {
     const tBody = document.querySelector("#table-body")
     const tr = document.createElement("tr")
     tr.setAttribute("id",symbol)
+    tr.setAttribute("role", "button")
     const newSymbol = document.createElement("td")
     newSymbol.textContent = symbol
     const lastPrice = document.createElement("td")

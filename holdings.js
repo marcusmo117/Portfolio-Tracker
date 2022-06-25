@@ -223,12 +223,28 @@ function inputSymbolToTable(symbol, data) {
     const newSymbol = document.createElement("td")
     newSymbol.textContent = symbol
     const lastPrice = document.createElement("td")
+    lastPrice.setAttribute("id", symbol + "last-price")
     lastPrice.textContent = data['c']
     // const change = document.createElement("td")
     // change.textContent = data['d']
     const changePercent = document.createElement("td")
+    changePercent.setAttribute("id", symbol + "change%")
     changePercent.textContent = data['dp']
     const shares = document.createElement("td")
+    // for determining total shares from local storage
+    const ttlSharesData = JSON.parse(localStorage.getItem("holdings"))
+    let ttlShares = 0
+    for (i=0; i<ttlSharesData.length; i++) {
+        this["shareRow"+i] = ttlSharesData[i][0]
+        if (tr.id === this["shareRow"+i]) {
+            ttlShares += ttlShares[i][2]
+        } else {
+            ttlShares = "-"
+        }
+    }
+    console.log(symbol + " shares:" + ttlShares )
+
+
     // shares.textContent = data['h']
     const avgCost = document.createElement("td")
     // avgCost.textContent = data['l']
@@ -573,13 +589,15 @@ function saveModal(symbol) {
     }
 }
 
+const holdingsDataLocal = JSON.parse(localStorage.getItem("holdings"))
+
 // adding holdings to table (all at once)
 function retrieveHoldings() {
     const data = JSON.parse(localStorage.getItem("holdings"))
     for (i=0; i<data.length; i++) {
         this["row"+i] = data[i][0]
         // console.log(this["row"+i]) 
-        const holdingsDropdown = document.getElementById(this["row"+i]+"dropdown")
+        const holdingsDropdown = document.getElementById(this["row"+i] + "dropdown")
         // console.log(holdingsTradeDate)
         const holdingsData = document.createElement("tr")
         if (holdingsDropdown.className === "collapse") {
@@ -595,9 +613,19 @@ function retrieveHoldings() {
         holdingsDataShares.textContent = data[i][2]
         const holdingsDataCost = document.createElement("td")
         holdingsDataCost.textContent = data[i][3]
+        // calculations portion 
+        const liveChangePer = document.getElementById(this["row"+i] + "change%")
+        const liveLastP = document.getElementById(this["row"+i] + "last-price")
         const holdingsDataMktVal = document.createElement("td")
         holdingsDataMktVal.setAttribute("colspan", "2")
         holdingsDataMktVal.textContent = Math.round(parseFloat(holdingsDataShares.textContent, 10) * parseFloat(holdingsDataCost.textContent, 10))
+        const holdingsDataDay = document.createElement("td")
+        holdingsDataDay.setAttribute("colspan", "2")
+        holdingsDataDay.textContent = Math.round(parseFloat(holdingsDataMktVal.textContent, 10) * parseFloat(liveChangePer.textContent, 10) * 0.01) + " (" + parseFloat(liveChangePer.textContent, 10).toFixed(2) + ")"
+        const holdingsDataTtl = document.createElement("td")
+        holdingsDataTtl.setAttribute("colspan", "2")
+        const totalGainForm = Math.round((parseFloat(liveLastP.textContent, 10) - parseFloat(holdingsDataCost.textContent, 10)) * parseFloat(holdingsDataShares.textContent, 10))
+        holdingsDataTtl.textContent = totalGainForm + " (" + 100*(totalGainForm / (parseFloat(holdingsDataMktVal.textContent, 10))).toFixed(4) + ")"
         // adding delete button + functionality
         const deleteTd = document.createElement("td")
         const deleteBtn = document.createElement("button")
@@ -616,6 +644,8 @@ function retrieveHoldings() {
         holdingsData.appendChild(holdingsDataShares)
         holdingsData.appendChild(holdingsDataCost)
         holdingsData.appendChild(holdingsDataMktVal)
+        holdingsData.appendChild(holdingsDataDay)
+        holdingsData.appendChild(holdingsDataTtl)
         holdingsData.appendChild(deleteTd)
         insertAfter(holdingsData, holdingsDropdown)
         // console.log('retrieve holdings working')
@@ -626,6 +656,28 @@ function retrieveHoldings() {
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
 }
+
+
+//  // for determining total shares from local storage
+//  function test1() {
+//     const ttlSharesData = JSON.parse(localStorage.getItem("holdings"))
+//     let ttlShares = 0
+//     for (i=0; i<ttlSharesData.length; i++) {
+//         this["shareRow"+i] = ttlSharesData[i][0]
+//         console.log(this["shareRow"+i])
+//         // if (tr.id === this["shareRow"+i]) {
+//         //     ttlShares += ttlShares[i][2]
+//         // } else {
+//         //     ttlShares = "-"
+//         // }
+//     }
+//  }
+
+//  test1()
+
+
+
+
 
 
 
