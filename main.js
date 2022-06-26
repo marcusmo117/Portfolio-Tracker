@@ -2,6 +2,7 @@
 const sandboxKey = 'sandbox_cai0r9aad3i7auh4hp4g'
 const apiKey = 'cai0r9aad3i7auh4hp40'
 
+
 // api urls 
 const quoteUrl = 'https://finnhub.io/api/v1/quote?'
 const companyInfoUrl = 'https://finnhub.io/api/v1/stock/profile2?'
@@ -12,17 +13,13 @@ const companyFinancials = 'https://finnhub.io/api/v1/stock/metric?'
 const companyEps = 'https://finnhub.io/api/v1/stock/earnings?'
 
 
-
 // generic api function call 
 async function fetchDataAsync(url, symbol, key) {
     const response = await fetch(url + 'symbol=' + symbol + '&token=' + key);
     const data = await response.json();
     console.log('data: ', data)
     return data
-  }
-
-// fetchDataAsync(quoteUrl, 'AAPL', sandboxKey)
-// fetchDataAsync(companyEps, 'AAPL', apiKey)
+}
 
 
 // to retrieve input value 
@@ -39,7 +36,8 @@ async function fetchQuoteApi(symbol) {
     const data = await response.json();
     console.log('data: ', data)
     return data
-  }
+}
+
 
 // input data into table 
 function inputSymbolToTable(symbol, data) {
@@ -50,17 +48,17 @@ function inputSymbolToTable(symbol, data) {
     const newSymbol = document.createElement("td")
     newSymbol.textContent = symbol
     const lastPrice = document.createElement("td")
-    lastPrice.textContent = data['c']
+    lastPrice.textContent = toMakeNum(data['c'])
     const change = document.createElement("td")
-    change.textContent = data['d']
+    change.textContent = toMakeNum(data['d'])
     const changePercent = document.createElement("td")
-    changePercent.textContent = data['dp']
+    changePercent.textContent = toMakeNum(roundToTwo(data['dp']))
     const dayHigh = document.createElement("td")
-    dayHigh.textContent = data['h']
+    dayHigh.textContent = toMakeNum(roundToTwo(data['h']))
     const dayLow = document.createElement("td")
-    dayLow.textContent = data['l']
+    dayLow.textContent = toMakeNum(roundToTwo(data['l']))
     const prevClose = document.createElement("td")
-    prevClose.textContent = data['pc']
+    prevClose.textContent = toMakeNum(data['pc'])
     const deleteTd = document.createElement("td")
     const deleteBtn = document.createElement("button")
     deleteBtn.setAttribute("type", "button")
@@ -86,16 +84,7 @@ function inputSymbolToTable(symbol, data) {
       if (mainList.childElementCount === 0) {
         inputNewsIntoList(responseNews)
       } else {
-        const news1 = mainList.children[0]
-        const news2 = mainList.children[1]
-        const news3 = mainList.children[2]
-        const news4 = mainList.children[3]
-        const news5 = mainList.children[4]
-        news1.remove();
-        news2.remove();
-        news3.remove();
-        news4.remove();
-        news5.remove();
+        removeAllChildNodes(mainList)
         inputNewsIntoList(responseNews)
       }
     })
@@ -122,7 +111,6 @@ function inputSymbolToTable(symbol, data) {
     // adding delete button 
     deleteBtn.addEventListener("click", (event) => {
 
-
       // removing ticker from local storage 
       deleteInputValue(JSON.stringify(tr.id))
 
@@ -142,25 +130,17 @@ function inputSymbolToTable(symbol, data) {
       const tickerNews = document.querySelector("#ticker-news-header")
       tickerNews.innerText = "Ticker news"
       const mainList = document.querySelector("#news-list")
-      const news1 = mainList.children[0]
-      const news2 = mainList.children[1]
-      const news3 = mainList.children[2]
-      const news4 = mainList.children[3]
-      const news5 = mainList.children[4]
-      news1.remove();
-      news2.remove();
-      news3.remove();
-      news4.remove();
-      news5.remove();
-
-      // // removing symbol from local storage
-      // const identifyTicker = tr.textContent
-      // const symbols1 = symbols.filter(ticker => ticker !== identifyTicker)
-      // localStorage.setItem("tickers", JSON.stringify(symbols1))
-      // console.log('test symbol getting deleted')
+      removeAllChildNodes(mainList)
     })
-
 }
+
+
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+      parent.removeChild(parent.firstChild);
+  }
+}
+
 
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
@@ -169,7 +149,6 @@ document.querySelector("#button").addEventListener("click", async() => {
     saveInputValue()
 })
 
- 
 
 // to get today's date and time
 const today = new Date();
@@ -178,6 +157,7 @@ const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
 const yyyy = today.getFullYear();
 const todayDate = yyyy + '-' + mm + '-' + dd;
 console.log(todayDate)
+
 
 // setting date-time refresh (interval)
 const zeroFill = n => {
@@ -188,7 +168,8 @@ const interval = setInterval(() => {
   const time = zeroFill(today.getHours()) + ":" + zeroFill(today.getMinutes()) + ":" + zeroFill(today.getSeconds());
   const dateTime = todayDate + ' ' + time
   document.getElementById('date-time').innerHTML = dateTime;
-  }, 1000);
+}, 1000);
+
 
 // to call company news api 
 async function fetchCompanyNewsApi(symbol) {
@@ -198,42 +179,23 @@ async function fetchCompanyNewsApi(symbol) {
   return data
 }
 
-// fetchCompanyNewsApi('MSFT')
 
 // input news into list 
 function inputNewsIntoList(data) {
   const newsList = document.querySelector("#news-list")
+  createNews(newsList, 5, data)
+}
 
-  const firstNews = document.createElement("a")
-  firstNews.setAttribute("href",data[0]['url'])
-  firstNews.setAttribute("class","list-group-item list-group-item-action")
-  firstNews.textContent = data[0]['headline']
 
-  const secondNews = document.createElement("a")
-  secondNews.setAttribute("href",data[1]['url'])
-  secondNews.setAttribute("class","list-group-item list-group-item-action")
-  secondNews.textContent = data[1]['headline']
-
-  const thirdNews = document.createElement("a")
-  thirdNews.setAttribute("href",data[2]['url'])
-  thirdNews.setAttribute("class","list-group-item list-group-item-action")
-  thirdNews.textContent = data[2]['headline']
-
-  const fourthNews = document.createElement("a")
-  fourthNews.setAttribute("href",data[3]['url'])
-  fourthNews.setAttribute("class","list-group-item list-group-item-action")
-  fourthNews.textContent = data[3]['headline']
-
-  const fifthNews = document.createElement("a")
-  fifthNews.setAttribute("href",data[4]['url'])
-  fifthNews.setAttribute("class","list-group-item list-group-item-action")
-  fifthNews.textContent = data[4]['headline']
-
-  newsList.appendChild(firstNews)
-  newsList.appendChild(secondNews)
-  newsList.appendChild(thirdNews)
-  newsList.appendChild(fourthNews)
-  newsList.appendChild(fifthNews)
+// making news to input into list (no. of news configurable) 
+function createNews(newsHeader, noOfNews, data) {
+  for (iNews = 0; iNews < noOfNews; iNews++) {
+      this["News"+iNews] = document.createElement("a")
+      this["News"+iNews].setAttribute("href",data[iNews]['url'])
+      this["News"+iNews].setAttribute("class","list-group-item list-group-item-action")
+      this["News"+iNews].textContent = data[iNews]['headline']
+      newsHeader.appendChild(this["News"+iNews])
+  }
 }
 
 
@@ -248,6 +210,7 @@ async function fetchCompanyFinancials(symbol) {
 
 // input financials into list
 function inputFinancialsIntoList(data) {
+
   // creating left side of ticker financials 
   const tableLeftParent = document.querySelector("#ticker-info-left-parent")
   const tableLeft = document.createElement("table")
@@ -273,7 +236,7 @@ function inputFinancialsIntoList(data) {
     const yearHigh = document.createElement("td")
     yearHigh.textContent = "52-week high:"
     const yearHighValue = document.createElement("td")
-    yearHighValue.textContent = data['metric']['52WeekHigh'] + " (" + data['metric']['52WeekHighDate'] + ")"
+    yearHighValue.textContent = toMakeNum(roundToTwo(data['metric']['52WeekHigh'])) + " (" + data['metric']['52WeekHighDate'] + ")"
     trLeft1.appendChild(yearHigh)
     trLeft1.appendChild(yearHighValue)
     tBodyLeft.appendChild(trLeft1)
@@ -284,31 +247,16 @@ function inputFinancialsIntoList(data) {
     const yearLow = document.createElement("td")
     yearLow.textContent = "52-week low:"
     const yearLowValue = document.createElement("td")
-    yearLowValue.textContent = data['metric']['52WeekLow'] + " (" + data['metric']['52WeekLowDate'] + ")"
+    yearLowValue.textContent = toMakeNum(roundToTwo(data['metric']['52WeekLow'])) + " (" + data['metric']['52WeekLowDate'] + ")"
     trLeft2.appendChild(yearLow)
     trLeft2.appendChild(yearLowValue)
     tBodyLeft.appendChild(trLeft2)
      
     // creating 3rd row of table - Market cap
-    const trLeft3 = document.createElement("tr")
-    const marketCap = document.createElement("td")
-    marketCap.textContent = "Market cap:"
-    const marketCapValue = document.createElement("td")
-    marketCapValue.textContent = data['metric']['marketCapitalization']
-    trLeft3.appendChild(marketCap)
-    trLeft3.appendChild(marketCapValue)
-    tBodyLeft.appendChild(trLeft3)
+    tableRowAdder("Market cap:", "marketCapitalization", data, tBodyLeft)
 
     // creating 4th row of table - Beta
-    const trLeft4 = document.createElement("tr")
-    const beta = document.createElement("td")
-    beta.textContent = "Beta:"
-    const betaValue = document.createElement("td")
-    betaValue.textContent = data['metric']['beta']
-    trLeft4.appendChild(beta)
-    trLeft4.appendChild(betaValue)
-    tBodyLeft.appendChild(trLeft4)
-
+    tableRowAdder("Beta:", "beta", data, tBodyLeft)
 
   // creating Right side of ticker financials
   const tableRightParent = document.querySelector("#ticker-info-right-parent")
@@ -335,7 +283,7 @@ function inputFinancialsIntoList(data) {
     const peRatio = document.createElement("td")
     peRatio.textContent = "P/E ratio (TTM):"
     const peValue = document.createElement("td")
-    peValue.textContent = data['metric']['peBasicExclExtraTTM']
+    peValue.textContent = toMakeNum(roundToTwo(data['metric']['peBasicExclExtraTTM']))
     trRight1.appendChild(peRatio)
     trRight1.appendChild(peValue)
     tBodyRight.appendChild(trRight1)
@@ -358,11 +306,72 @@ function tableRowAdder(financialKey, apiKey, data, tBody) {
   const financial = document.createElement("td")
   financial.textContent = financialKey
   const financialValue = document.createElement("td")
-  financialValue.textContent = data['metric'][apiKey]
+  financialValue.textContent = toMakeNum(roundToTwo(data['metric'][apiKey]))
   tr.appendChild(financial)
   tr.appendChild(financialValue)
   tBody.appendChild(tr)
 }
 
+// function to round to dp
+function roundToTwo(num) {
+  return + (Math.round(num + "e+2")  + "e-2");
+}
+
+// to add commas 
+function toMakeNum(num) {
+  const number = (parseFloat(num)).toLocaleString()
+  return number 
+}
+
+// to convert str with commas to numbers 
+function convStrCom(str) {
+  const num = parseFloat(str.replace(/,/g, ''))
+  return num
+}
 
 
+
+
+
+
+
+
+
+
+//-----------------------------------
+
+// OLD input news into list 
+// function inputNewsIntoList(data) {
+//   const newsList = document.querySelector("#news-list")
+
+  // const firstNews = document.createElement("a")
+  // firstNews.setAttribute("href",data[0]['url'])
+  // firstNews.setAttribute("class","list-group-item list-group-item-action")
+  // firstNews.textContent = data[0]['headline']
+
+  // const secondNews = document.createElement("a")
+  // secondNews.setAttribute("href",data[1]['url'])
+  // secondNews.setAttribute("class","list-group-item list-group-item-action")
+  // secondNews.textContent = data[1]['headline']
+
+  // const thirdNews = document.createElement("a")
+  // thirdNews.setAttribute("href",data[2]['url'])
+  // thirdNews.setAttribute("class","list-group-item list-group-item-action")
+  // thirdNews.textContent = data[2]['headline']
+
+  // const fourthNews = document.createElement("a")
+  // fourthNews.setAttribute("href",data[3]['url'])
+  // fourthNews.setAttribute("class","list-group-item list-group-item-action")
+  // fourthNews.textContent = data[3]['headline']
+
+  // const fifthNews = document.createElement("a")
+  // fifthNews.setAttribute("href",data[4]['url'])
+  // fifthNews.setAttribute("class","list-group-item list-group-item-action")
+  // fifthNews.textContent = data[4]['headline']
+
+  // newsList.appendChild(firstNews)
+  // newsList.appendChild(secondNews)
+  // newsList.appendChild(thirdNews)
+  // newsList.appendChild(fourthNews)
+  // newsList.appendChild(fifthNews)
+// }

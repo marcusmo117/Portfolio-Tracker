@@ -2,7 +2,6 @@
 function saveInputValue() {
     const symbols = []
     const toAdd = JSON.parse(localStorage.getItem("tickers"))
-    // console.log(toAdd)
     if (toAdd===null) {
         const saveValue = document.getElementById("ticker-input").value
         symbols.push(saveValue)
@@ -17,6 +16,7 @@ function saveInputValue() {
     }
 } 
 
+
 window.onload = async () => {
     const symbolsToLoad = JSON.parse(localStorage.getItem("tickers"))
     for (i=0; i<symbolsToLoad.length; i++) {
@@ -25,6 +25,7 @@ window.onload = async () => {
     }
     retrieveHoldings()
 }
+
 
 function deleteInputValue(ticker) {
     const symbols = JSON.parse(localStorage.getItem("tickers"))
@@ -38,6 +39,7 @@ function deleteInputValue(ticker) {
         }
     }
 }   
+
 
 function deleteHoldingsRow(identifier) {
     const holdingsData = JSON.parse(localStorage.getItem("holdings"))

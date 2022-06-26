@@ -2,6 +2,7 @@
 const sandboxKey = 'sandbox_cai0r9aad3i7auh4hp4g'
 const apiKey = 'cai0r9aad3i7auh4hp40'
 
+
 // api urls 
 const quoteUrl = 'https://finnhub.io/api/v1/quote?'
 const companyInfoUrl = 'https://finnhub.io/api/v1/stock/profile2?'
@@ -12,17 +13,13 @@ const companyFinancials = 'https://finnhub.io/api/v1/stock/metric?'
 const companyEps = 'https://finnhub.io/api/v1/stock/earnings?'
 
 
-
 // generic api function call 
 async function fetchDataAsync(url, symbol, key) {
     const response = await fetch(url + 'symbol=' + symbol + '&token=' + key);
     const data = await response.json();
     console.log('data: ', data)
     return data
-  }
-
-// fetchDataAsync(quoteUrl, 'AAPL', sandboxKey)
-// fetchDataAsync(companyEps, 'AAPL', apiKey)
+}
 
 
 // to retrieve input value 
@@ -39,7 +36,8 @@ async function fetchQuoteApi(symbol) {
     const data = await response.json();
     console.log('data: ', data)
     return data
-  }
+}
+
 
 // input data into table 
 function inputSymbolToTable(symbol, data) {
@@ -103,7 +101,6 @@ function inputSymbolToTable(symbol, data) {
     ddTr.appendChild(ddDayGain)
     ddTr.appendChild(ddTtlGain)
     ddTr.appendChild(ddDeleteBtn)
-
 
     // adding modal button icon
     const modalButton = document.createElement("td")
@@ -227,12 +224,14 @@ function inputSymbolToTable(symbol, data) {
     newSymbol.textContent = symbol
     const lastPrice = document.createElement("td")
     lastPrice.setAttribute("id", symbol + "last-price")
-    lastPrice.textContent = data['c']
+    lastPrice.textContent = (toMakeNum(data['c']))
+    const lastPriceVal = data['c']
     // const change = document.createElement("td")
     // change.textContent = data['d']
     const changePercent = document.createElement("td")
     changePercent.setAttribute("id", symbol + "change%")
-    changePercent.textContent = data['dp']
+    changePercent.textContent = toMakeNum(roundToTwo(data['dp']))
+    const changePercentVal = data['dp']
     const shares = document.createElement("td")
     // calculations portion
     const ttlSharesData = JSON.parse(localStorage.getItem("holdings"))
@@ -252,11 +251,14 @@ function inputSymbolToTable(symbol, data) {
             } else {
                 ttlShares = ttlShares
             }
-            // console.log(symbol + " shares:" + ttlShares)
         }
-        shares.textContent = ttlShares
+        const sharesVal = ttlShares
+        if (sharesVal === 0) {
+            shares.textContent = "-"
+        } else {
+            shares.textContent = toMakeNum(ttlShares)
+        }
         // for determining avg cost/share from local storage 
-        // const avgCost = document.createElement("td")
         let ttlCost = 0
         for (j=0; j<ttlSharesData.length; j++) {
             this["Cost"+j] = ttlSharesData[j][0]
@@ -265,29 +267,39 @@ function inputSymbolToTable(symbol, data) {
             } else {
                 ttlCost = ttlCost
             }
-            // console.log(symbol + " total cost:" + ttlCost)
         }
-        avgCost.textContent = roundToTwo((ttlCost / ttlShares))
+        const avgCostVal = (ttlCost / ttlShares)
+        if (avgCostVal !== avgCostVal) {
+            avgCost.textContent = "-"
+        } else {
+            avgCost.textContent = toMakeNum(roundToTwo((ttlCost / ttlShares)))
+        }
         // for determining mkt value
-        // const mktValue = document.createElement("td")
-        mktValue.textContent = roundToTwo((parseFloat(lastPrice.textContent, 10) * parseFloat(shares.textContent, 10)))
-        // for determining day gain and %
-        // const dayGain = document.createElement("td")
-        dayGain.textContent = roundToTwo((parseFloat(mktValue.textContent, 10) / (100 + parseFloat(changePercent.textContent,10))) * parseFloat(changePercent.textContent, 10))
-        // const dayGainPer = document.createElement("td")
-        dayGainPer.textContent = data['dp']
-        // for determining ttl gain and %
-        // const ttlGain = document.createElement("td")
-        ttlGain.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10)) - (parseFloat(avgCost.textContent, 10))) * (ttlShares))
-        // const ttlGainPer = document.createElement("td")
-        ttlGainPer.textContent = roundToTwo(((parseFloat(lastPrice.textContent, 10) - parseFloat(avgCost.textContent, 10)) / parseFloat(avgCost.textContent, 10)) * 100)
+        const mktValueVal = (parseFloat(lastPriceVal, 10) * parseFloat(sharesVal, 10))
+        if (mktValueVal === 0) {
+            mktValue.textContent = "-"
+        } else {
+            mktValue.textContent = toMakeNum(roundToTwo((parseFloat(lastPriceVal, 10) * parseFloat(sharesVal, 10))))
+        }
+        // for determining day gain
+        dayGain.textContent = toMakeNum(roundToTwo((parseFloat(mktValueVal, 10) / (100 + parseFloat(changePercentVal, 10))) * parseFloat(changePercentVal, 10)))
+        const dayGainVal = (parseFloat(mktValueVal, 10) / (100 + parseFloat(changePercentVal, 10))) * parseFloat(changePercentVal, 10)
+        // for determining day gain %
+        dayGainPer.textContent = toMakeNum(roundToTwo(data['dp']))
+        const dayGainPerVal = data['dp']
+        // for determining ttl gain
+        ttlGain.textContent = toMakeNum(roundToTwo(((parseFloat(lastPriceVal, 10)) - (parseFloat(avgCostVal, 10))) * (ttlShares)))
+        const ttlGainVal = ((parseFloat(lastPriceVal, 10)) - (parseFloat(avgCostVal, 10))) * (ttlShares)
+        // for determining ttl gain %
+        ttlGainPer.textContent = toMakeNum(roundToTwo(((parseFloat(lastPriceVal, 10) - parseFloat(avgCostVal, 10)) / parseFloat(avgCostVal, 10)) * 100))
+        const ttlGainPerVal = ((parseFloat(lastPriceVal, 10) - parseFloat(avgCostVal, 10)) / parseFloat(avgCostVal, 10)) * 100
     
         // validation for no holdigs (market value = 0)
-        if (mktValue.textContent === "0") {
-            dayGain.textContent = 0
-            dayGainPer.textContent = 0
-            ttlGain.textContent = 0
-            ttlGainPer.textContent = 0
+        if (mktValue.textContent === "-") {
+            dayGain.textContent = "-"
+            dayGainPer.textContent = "-"
+            ttlGain.textContent = "-"
+            ttlGainPer.textContent = "-"
         }
     } else {}
     
@@ -316,51 +328,8 @@ function inputSymbolToTable(symbol, data) {
     tBody.appendChild(tr)
     tBody.appendChild(ddTr)
 
-    //adding news functionality when clicking
-    // tr.addEventListener("click", async() => {
-    //   const responseNews = await fetchCompanyNewsApi(symbol)
-    //   const tickerNews = document.querySelector("#ticker-news-header")
-    //   tickerNews.innerText = symbol + " news"
-    //   const mainList = document.querySelector("#news-list")
-    //   if (mainList.childElementCount === 0) {
-    //     inputNewsIntoList(responseNews)
-    //   } else {
-    //     const news1 = mainList.children[0]
-    //     const news2 = mainList.children[1]
-    //     const news3 = mainList.children[2]
-    //     const news4 = mainList.children[3]
-    //     const news5 = mainList.children[4]
-    //     news1.remove();
-    //     news2.remove();
-    //     news3.remove();
-    //     news4.remove();
-    //     news5.remove();
-    //     inputNewsIntoList(responseNews)
-    //   }
-    // })
-
-    // adding ticker information functionality when clicking (using loops for removing)
-    // tr.addEventListener("click", async() => {
-    //   const responseFinancials = await fetchCompanyFinancials(symbol)
-      
-    //   const tickerInfo = document.querySelector('#ticker-information')
-    //   tickerInfo.innerText = symbol + ' information'
-    //   const infoTableLeft = document.querySelector('#ticker-info-left-parent')
-    //   const infoTableRight = document.querySelector('#ticker-info-right-parent')
-    //   if (infoTableLeft.childElementCount === 0) {
-    //     inputFinancialsIntoList(responseFinancials)
-    //   } else {
-    //     while (infoTableLeft.firstChild) {
-    //       infoTableLeft.removeChild(infoTableLeft.lastChild)
-    //       infoTableRight.removeChild(infoTableRight.lastChild)
-    //     }
-    //     inputFinancialsIntoList(responseFinancials)
-    //   }
-    // })
-
     // adding delete button functionality
     deleteBtn.addEventListener("click", (event) => {
-
 
       // removing ticker from local storage 
       deleteInputValue(JSON.stringify(tr.id))
@@ -368,32 +337,9 @@ function inputSymbolToTable(symbol, data) {
       // removing row in table
       event.stopPropagation()
       tr.remove()
-
-    //   // removing financial info
-    //   const tickerInfo = document.querySelector('#ticker-information')
-    //   tickerInfo.innerText = 'Ticker information'
-    //   const infoTableLeft = document.querySelector('#ticker-info-left')
-    //   const infoTableRight = document.querySelector('#ticker-info-right')
-    //   infoTableLeft.remove()
-    //   infoTableRight.remove()
-      
-    //   // removing news 
-    //   const tickerNews = document.querySelector("#ticker-news-header")
-    //   tickerNews.innerText = "Ticker news"
-    //   const mainList = document.querySelector("#news-list")
-    //   const news1 = mainList.children[0]
-    //   const news2 = mainList.children[1]
-    //   const news3 = mainList.children[2]
-    //   const news4 = mainList.children[3]
-    //   const news5 = mainList.children[4]
-    //   news1.remove();
-    //   news2.remove();
-    //   news3.remove();
-    //   news4.remove();
-    //   news5.remove();
     })
-
 }
+
 
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
@@ -411,190 +357,18 @@ const yyyy = today.getFullYear();
 const todayDate = yyyy + '-' + mm + '-' + dd;
 console.log(todayDate)
 
+
 // setting date-time refresh (interval)
 const zeroFill = n => {
   return ('0' + n).slice(-2);
 }
+
 const interval = setInterval(() => {
   const today = new Date();
   const time = zeroFill(today.getHours()) + ":" + zeroFill(today.getMinutes()) + ":" + zeroFill(today.getSeconds());
   const dateTime = todayDate + ' ' + time
   document.getElementById('date-time').innerHTML = dateTime;
-  }, 1000);
-
-// to call company news api 
-async function fetchCompanyNewsApi(symbol) {
-  const response = await fetch(companyNewsUrl + 'symbol=' + symbol +'&from=2022-06-01&to=' + todayDate + '&token=' + apiKey);
-  const data = await response.json();
-  console.log('data: ', data[0], data[1], data[2], data[3], data[4])
-  return data
-}
-
-// fetchCompanyNewsApi('MSFT')
-
-// input news into list 
-function inputNewsIntoList(data) {
-  const newsList = document.querySelector("#news-list")
-
-  const firstNews = document.createElement("a")
-  firstNews.setAttribute("href",data[0]['url'])
-  firstNews.setAttribute("class","list-group-item list-group-item-action")
-  firstNews.textContent = data[0]['headline']
-
-  const secondNews = document.createElement("a")
-  secondNews.setAttribute("href",data[1]['url'])
-  secondNews.setAttribute("class","list-group-item list-group-item-action")
-  secondNews.textContent = data[1]['headline']
-
-  const thirdNews = document.createElement("a")
-  thirdNews.setAttribute("href",data[2]['url'])
-  thirdNews.setAttribute("class","list-group-item list-group-item-action")
-  thirdNews.textContent = data[2]['headline']
-
-  const fourthNews = document.createElement("a")
-  fourthNews.setAttribute("href",data[3]['url'])
-  fourthNews.setAttribute("class","list-group-item list-group-item-action")
-  fourthNews.textContent = data[3]['headline']
-
-  const fifthNews = document.createElement("a")
-  fifthNews.setAttribute("href",data[4]['url'])
-  fifthNews.setAttribute("class","list-group-item list-group-item-action")
-  fifthNews.textContent = data[4]['headline']
-
-  newsList.appendChild(firstNews)
-  newsList.appendChild(secondNews)
-  newsList.appendChild(thirdNews)
-  newsList.appendChild(fourthNews)
-  newsList.appendChild(fifthNews)
-}
-
-
-// to call Company Financials API
-async function fetchCompanyFinancials(symbol) {
-  const response = await fetch(companyFinancials + 'symbol=' + symbol +'&metric=all&token=' + apiKey);
-  const data = await response.json();
-  console.log('data: ', data['metric']['52WeekHigh'], data['metric']['52WeekHighDate'], data['metric']['52WeekLow'], data['metric']['52WeekLowDate'], data['metric']['marketCapitalization'], data['metric']['beta'], data['metric']['peBasicExclExtraTTM'], data['metric']['psTTM'], data['metric']['totalDebt/totalEquityAnnual'], data['metric']['roeTTM'])
-  return data
-}
-
-
-// input financials into list
-function inputFinancialsIntoList(data) {
-  // creating left side of ticker financials 
-  const tableLeftParent = document.querySelector("#ticker-info-left-parent")
-  const tableLeft = document.createElement("table")
-  tableLeft.setAttribute("class", "table table-hover text-center")
-  tableLeft.setAttribute("id", "ticker-info-left")
-  tableLeftParent.appendChild(tableLeft)
-
-    // creating table head
-    const headLeft = document.createElement("thead")
-    const trLeft = document.createElement("tr")
-    const column1Left = document.createElement("th")
-    column1Left.setAttribute("scope","col")
-    const column2Left = document.createElement("th")
-    column2Left.setAttribute("scope","col")
-    trLeft.appendChild(column1Left)
-    trLeft.appendChild(column2Left)
-    headLeft.appendChild(trLeft)
-    tableLeft.appendChild(headLeft)
-
-    // creating 1st row of table - 52 week high
-    const tBodyLeft = document.createElement("tbody")
-    const trLeft1 = document.createElement("tr")
-    const yearHigh = document.createElement("td")
-    yearHigh.textContent = "52-week high:"
-    const yearHighValue = document.createElement("td")
-    yearHighValue.textContent = data['metric']['52WeekHigh'] + " (" + data['metric']['52WeekHighDate'] + ")"
-    trLeft1.appendChild(yearHigh)
-    trLeft1.appendChild(yearHighValue)
-    tBodyLeft.appendChild(trLeft1)
-    tableLeft.appendChild(tBodyLeft)
-
-    // creating 2nd row of table - 52 week low
-    const trLeft2 = document.createElement("tr")
-    const yearLow = document.createElement("td")
-    yearLow.textContent = "52-week low:"
-    const yearLowValue = document.createElement("td")
-    yearLowValue.textContent = data['metric']['52WeekLow'] + " (" + data['metric']['52WeekLowDate'] + ")"
-    trLeft2.appendChild(yearLow)
-    trLeft2.appendChild(yearLowValue)
-    tBodyLeft.appendChild(trLeft2)
-     
-    // creating 3rd row of table - Market cap
-    const trLeft3 = document.createElement("tr")
-    const marketCap = document.createElement("td")
-    marketCap.textContent = "Market cap:"
-    const marketCapValue = document.createElement("td")
-    marketCapValue.textContent = data['metric']['marketCapitalization']
-    trLeft3.appendChild(marketCap)
-    trLeft3.appendChild(marketCapValue)
-    tBodyLeft.appendChild(trLeft3)
-
-    // creating 4th row of table - Beta
-    const trLeft4 = document.createElement("tr")
-    const beta = document.createElement("td")
-    beta.textContent = "Beta:"
-    const betaValue = document.createElement("td")
-    betaValue.textContent = data['metric']['beta']
-    trLeft4.appendChild(beta)
-    trLeft4.appendChild(betaValue)
-    tBodyLeft.appendChild(trLeft4)
-
-
-  // creating Right side of ticker financials
-  const tableRightParent = document.querySelector("#ticker-info-right-parent")
-  const tableRight = document.createElement("table")
-  tableRight.setAttribute("class", "table table-hover text-center")
-  tableRight.setAttribute("id", "ticker-info-right")
-  tableRightParent.appendChild(tableRight)
-
-    // creating table head
-    const headRight = document.createElement("thead")
-    const trRight = document.createElement("tr")
-    const column1Right = document.createElement("th")
-    column1Right.setAttribute("scope","col")
-    const column2Right = document.createElement("th")
-    column2Right.setAttribute("scope","col")
-    trRight.appendChild(column1Right)
-    trRight.appendChild(column2Right)
-    headRight.appendChild(trRight)
-    tableRight.appendChild(headRight)
-
-    // creating 1st row of table - PE ratio
-    const tBodyRight = document.createElement("tbody")
-    const trRight1 = document.createElement("tr")
-    const peRatio = document.createElement("td")
-    peRatio.textContent = "P/E ratio (TTM):"
-    const peValue = document.createElement("td")
-    peValue.textContent = data['metric']['peBasicExclExtraTTM']
-    trRight1.appendChild(peRatio)
-    trRight1.appendChild(peValue)
-    tBodyRight.appendChild(trRight1)
-    tableRight.appendChild(tBodyRight)
-
-    // creating 2nd row of table - PS ratio (with function)
-    tableRowAdder('P/S ratio (TTM):', 'psTTM', data, tBodyRight)
-
-    // creating 3rd row of table - DE ratio (with function)
-    tableRowAdder('D/E ratio:', 'totalDebt/totalEquityAnnual', data, tBodyRight)
-
-    // creating 4th row of table - ROE (with function)
-    tableRowAdder('ROE (TTM):', 'roeTTM', data, tBodyRight)
-
-}
-
-
-function tableRowAdder(financialKey, apiKey, data, tBody) {
-  const tr = document.createElement("tr")
-  const financial = document.createElement("td")
-  financial.textContent = financialKey
-  const financialValue = document.createElement("td")
-  financialValue.textContent = data['metric'][apiKey]
-  tr.appendChild(financial)
-  tr.appendChild(financialValue)
-  tBody.appendChild(tr)
-}
+}, 1000);
 
 
 // holdings page functionalities
@@ -621,6 +395,7 @@ function saveModal(symbol) {
     }
 }
 
+
 // adding holdings to table (all at once)
 function retrieveHoldings() {
     const data = JSON.parse(localStorage.getItem("holdings"))
@@ -640,23 +415,26 @@ function retrieveHoldings() {
         holdingsDataDate.setAttribute("colspan", "4")
         holdingsDataDate.textContent = data[i][1]
         const holdingsDataShares = document.createElement("td")
-        holdingsDataShares.textContent = data[i][2]
+        holdingsDataShares.textContent = toMakeNum(data[i][2])
+        const holdingsDataSharesVal = data[i][2]
         const holdingsDataCost = document.createElement("td")
-        holdingsDataCost.textContent = data[i][3]
+        holdingsDataCost.textContent = toMakeNum(roundToTwo(data[i][3]))
+        const holdingsDataCostVal = data[i][3]
         // calculations portion 
         const liveChangePer = document.getElementById(this["row"+i] + "change%")
         const liveLastP = document.getElementById(this["row"+i] + "last-price")
         const holdingsDataMktVal = document.createElement("td")
         holdingsDataMktVal.setAttribute("colspan", "2")
-        holdingsDataMktVal.textContent = roundToTwo(parseFloat(holdingsDataShares.textContent, 10) * parseFloat(liveLastP.textContent, 10))
+        holdingsDataMktVal.textContent = toMakeNum(roundToTwo(parseFloat(holdingsDataSharesVal, 10) * convStrCom(liveLastP.textContent)))
+        const holdingsDataMktValVal = parseFloat(holdingsDataSharesVal, 10) * convStrCom(liveLastP.textContent)
         const holdingsDataDay = document.createElement("td")
         holdingsDataDay.setAttribute("colspan", "2")
-        holdingsDataDay.textContent = roundToTwo((parseFloat(holdingsDataMktVal.textContent, 10) / ((parseFloat(liveChangePer.textContent, 10)) + 100))* (parseFloat(liveChangePer.textContent, 10))) + " (" + roundToTwo(parseFloat(liveChangePer.textContent, 10)) + ")"
+        holdingsDataDay.textContent = toMakeNum(roundToTwo((parseFloat(holdingsDataMktValVal, 10) / ((convStrCom(liveChangePer.textContent)) + 100))* (convStrCom(liveChangePer.textContent)))) + " (" + toMakeNum(roundToTwo(convStrCom(liveChangePer.textContent)))+ ")"
         const holdingsDataTtl = document.createElement("td")
         holdingsDataTtl.setAttribute("colspan", "2")
-        const totalGainForm = roundToTwo((parseFloat(liveLastP.textContent, 10) - parseFloat(holdingsDataCost.textContent, 10)) * parseFloat(holdingsDataShares.textContent, 10))
-        const totalCostForm = roundToTwo(parseFloat(holdingsDataShares.textContent, 10) * (parseFloat(holdingsDataCost.textContent, 10)))
-        holdingsDataTtl.textContent = totalGainForm + " (" + roundToTwo(100*(totalGainForm / totalCostForm)) + ")"
+        const totalGainForm = roundToTwo((convStrCom(liveLastP.textContent) - parseFloat(holdingsDataCostVal, 10)) * parseFloat(holdingsDataSharesVal, 10))
+        const totalCostForm = roundToTwo(parseFloat(holdingsDataSharesVal, 10) * (parseFloat(holdingsDataCostVal, 10)))
+        holdingsDataTtl.textContent = toMakeNum(totalGainForm) + " (" + toMakeNum(roundToTwo(100*(totalGainForm / totalCostForm))) + ")"
         // adding delete button + functionality
         const deleteTd = document.createElement("td")
         const deleteBtn = document.createElement("button")
@@ -683,21 +461,34 @@ function retrieveHoldings() {
         }
 }
 
+
 // function to insert node after element
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
 }
 
+
 // function to round to dp
 function roundToTwo(num) {
-    return +(Math.round(num + "e+2")  + "e-2");
+    return + (Math.round(num + "e+2")  + "e-2");
+}
+
+// to add commas 
+function toMakeNum(num) {
+    const number = (parseFloat(num)).toLocaleString()
+    return number 
+}
+
+// to convert str with commas to numbers 
+function convStrCom(str) {
+    const num = parseFloat(str.replace(/,/g, ''))
+    return num
 }
 
 
 
 
-
-
+// -----------------------------
 // // adding holdings to table (one by one) --> on hold because don't need (just reload page)
 // function retrieveHoldingsOne(symbol) {
 //     const tradeDate = document.getElementById(symbol+"DateInputValue").value

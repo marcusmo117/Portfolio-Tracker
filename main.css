@@ -1,3 +1,11 @@
-/* #table-delete-btn {
-    opacity: 0.1;
-} */
+.collapse.show {
+    background-color: rgb(193, 215, 226);
+    animation: fadeBackground 6s;
+    animation-fill-mode: forwards;
+    font-style: italic;
+}
+
+@keyframes fadeBackground {
+    from { background-color: white; }
+    to { background-color: rgb(158, 215, 190); }
+  }
