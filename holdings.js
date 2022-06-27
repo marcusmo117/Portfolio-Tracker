@@ -50,6 +50,7 @@ function inputSymbolToTable(symbol, data) {
     holdingsDropdown.setAttribute("data-bs-toggle", "collapse")
     holdingsDropdown.setAttribute("data-bs-target", "#"+symbol+"dropdown")
     holdingsDropdown.setAttribute("role", "button")
+    holdingsDropdown.setAttribute("title", "Click to show holdings")
     holdingsDropdown.setAttribute("aria-expanded", "false")
     holdingsDropdown.setAttribute("aria-controls", "#"+symbol+"dropdown")
     const holdingsSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
@@ -107,6 +108,7 @@ function inputSymbolToTable(symbol, data) {
     modalButton.setAttribute("data-bs-toggle", "modal")
     modalButton.setAttribute("data-bs-target", "#"+symbol+"modal")
     modalButton.setAttribute("role", "button")
+    modalButton.setAttribute("title", "Click to add holdings")
     const modalSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
     modalSvg.setAttribute("width", "16")
     modalSvg.setAttribute("height", "16")
@@ -282,8 +284,8 @@ function inputSymbolToTable(symbol, data) {
             mktValue.textContent = toMakeNum(roundToTwo((parseFloat(lastPriceVal, 10) * parseFloat(sharesVal, 10))))
         }
         // for determining day gain
-        dayGain.textContent = toMakeNum(roundToTwo((parseFloat(mktValueVal, 10) / (100 + parseFloat(changePercentVal, 10))) * parseFloat(changePercentVal, 10)))
-        const dayGainVal = (parseFloat(mktValueVal, 10) / (100 + parseFloat(changePercentVal, 10))) * parseFloat(changePercentVal, 10)
+        dayGain.textContent = toMakeNum(roundToTwo((parseFloat(mktValueVal, 10) * ((roundToTwo(parseFloat(changePercentVal, 10)))/100))))
+        const dayGainVal = (parseFloat(mktValueVal, 10) * ((roundToTwo(parseFloat(changePercentVal, 10)))/100))
         // for determining day gain %
         dayGainPer.textContent = toMakeNum(roundToTwo(data['dp']))
         const dayGainPerVal = data['dp']
@@ -429,7 +431,7 @@ function retrieveHoldings() {
         const holdingsDataMktValVal = parseFloat(holdingsDataSharesVal, 10) * convStrCom(liveLastP.textContent)
         const holdingsDataDay = document.createElement("td")
         holdingsDataDay.setAttribute("colspan", "2")
-        holdingsDataDay.textContent = toMakeNum(roundToTwo((parseFloat(holdingsDataMktValVal, 10) / ((convStrCom(liveChangePer.textContent)) + 100))* (convStrCom(liveChangePer.textContent)))) + " (" + toMakeNum(roundToTwo(convStrCom(liveChangePer.textContent)))+ ")"
+        holdingsDataDay.textContent = toMakeNum(roundToTwo((parseFloat(holdingsDataMktValVal, 10)) * ((roundToTwo(convStrCom(liveChangePer.textContent)))/100))) + " (" + toMakeNum(roundToTwo(convStrCom(liveChangePer.textContent)))+ ")"
         const holdingsDataTtl = document.createElement("td")
         holdingsDataTtl.setAttribute("colspan", "2")
         const totalGainForm = roundToTwo((convStrCom(liveLastP.textContent) - parseFloat(holdingsDataCostVal, 10)) * parseFloat(holdingsDataSharesVal, 10))

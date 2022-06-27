@@ -1,11 +1,53 @@
-.collapse.show {
-    background-color: rgb(193, 215, 226);
+tr.collapse.show {
+    background-color: #eae24c63;
     animation: fadeBackground 6s;
     animation-fill-mode: forwards;
-    font-style: italic;
 }
 
 @keyframes fadeBackground {
     from { background-color: white; }
-    to { background-color: rgb(158, 215, 190); }
+    to { background-color: #eae24c63; }
   }
+
+#table-body {
+    border-collapse: collapse;
+    transition: 1s;
+}
+
+#top-portion {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+
+#total-holdings {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 15px;
+}
+
+h1, h4 {
+    font-family:'EB Garamond', serif;
+}
+
+table {
+    font-family: 'EB Garamond', serif;
+}
+
+nav {
+    font-family: 'EB Garamond', serif;
+    font-size: 20px;
+}
+
+#top-portion {
+    font-family: 'EB Garamond', serif; 
+}
+
+#add-ticker {
+    font-family: 'EB Garamond', serif; 
+}
+
+.modal-content {
+    font-family: 'EB Garamond', serif; 
+}
