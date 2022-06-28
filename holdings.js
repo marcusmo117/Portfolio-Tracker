@@ -34,8 +34,12 @@ function getInputValue() {
 async function fetchQuoteApi(symbol) {
     const response = await fetch(quoteUrl + 'symbol=' + symbol + '&token=' + apiKey);
     const data = await response.json();
-    console.log('data: ', data)
-    return data
+    if (data.d == null) {
+        return "error - no such symbol"
+    } else {
+        console.log('data: ', data)
+        return data
+    }
 }
 
 
@@ -122,7 +126,7 @@ function inputSymbolToTable(symbol, data) {
     modalButton.appendChild(modalSvg)
 
     // dynamically creating modal (for each asset)
-    const mainBody = document.querySelector("#main-body")
+    const mainBody = document.querySelector("#modal-portion")
     const modDiv1 = document.createElement("div")
         modDiv1.setAttribute("class", "modal fade")
         modDiv1.setAttribute("id", symbol+"modal")
@@ -346,8 +350,14 @@ function inputSymbolToTable(symbol, data) {
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
     const response = await fetchQuoteApi(getInputValue())
-    inputSymbolToTable(getInputValue(),response)
-    saveInputValue()
+    if (response === "error - no such symbol") {
+        const modal = new bootstrap.Modal(document.querySelector("#error-modal"))
+        modal.show()
+        return
+    } else {
+        inputSymbolToTable(getInputValue(),response)
+        saveInputValue()
+    }
 })
 
 
@@ -486,6 +496,29 @@ function convStrCom(str) {
     const num = parseFloat(str.replace(/,/g, ''))
     return num
 }
+
+
+// // to get total holdings 
+// function getTotalHoldings() {
+//     const holdingsData = JSON.parse(localStorage.getItem("holdings"))
+//     const tickerData = JSON.parse(localStorage.getItem("tickers"))
+//     let totalHoldingsValue = 0
+//     for (iHoldings = 0; iHoldings < holdingsData; iHoldings++) {
+//         if (holdingsData[iHoldings][0] === ) {
+//             const holdingsValue = (parseFloat(holdingsData[iHoldings][2])) * (parseFloat(holdingsData[iHoldings][3]))
+//             totalHoldingsValue += holdingsValue
+//         }
+//     }
+//     return totalHoldingsValue
+// }
+
+
+
+
+
+
+
+
 
 
 

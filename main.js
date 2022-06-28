@@ -34,8 +34,12 @@ function getInputValue() {
 async function fetchQuoteApi(symbol) {
     const response = await fetch(quoteUrl + 'symbol=' + symbol + '&token=' + apiKey);
     const data = await response.json();
-    console.log('data: ', data)
-    return data
+    if (data.d == null) {
+      return "error - no such symbol"
+    } else {
+      console.log('data: ', data)
+      return data
+    }
 }
 
 
@@ -144,9 +148,15 @@ function removeAllChildNodes(parent) {
 
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
-    const response = await fetchQuoteApi(getInputValue())
-    inputSymbolToTable(getInputValue(),response)
-    saveInputValue()
+  const response = await fetchQuoteApi(getInputValue())
+  if (response === "error - no such symbol") {
+      const modal = new bootstrap.Modal(document.querySelector("#error-modal"))
+      modal.show()
+      return
+  } else {
+      inputSymbolToTable(getInputValue(),response)
+      saveInputValue()
+  }
 })
 
 

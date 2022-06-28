@@ -19,9 +19,9 @@
           <a class="navbar-brand mb-0 h1">
             <img src="./images/signature (1).png" alt="" width="150" height="50">
           </a>
-          <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
-          </button> -->
+          </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
@@ -159,34 +159,26 @@
         </table>
 
         <!--modal functionality-->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">New holding</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form class="form-floating mb-3">
-                    <input type="text" class="form-control" id="DateInputValue" placeholder="YYYY-MM-DD" value="YYYY-MM-DD">
-                    <label for="DateInputValue">Trade date:</label>
-                  </form>
-                  <form class="form-floating mb-3">
-                    <input type="text" class="form-control" id="SharesInputValue" placeholder="No. of shares" value="No. of shares">
-                    <label for="SharesInputValue">Shares:</label>
-                  </form>
-                  <form class="form-floating mb-3">
-                    <input type="text" class="form-control" id="CostInputValue" placeholder="Avg. cost/share" value="Avg. cost/share">
-                    <label for="CostInputValue">Cost/share:</label>
-                  </form>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Just kidding</button>
-                  <button type="button" class="btn btn-primary">Add holding</button>
-                </div>
+        <div class="modal fade" id="error-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Error!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                NOT A VALID SYMBOL!! PUTANG INA MO..
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Okok, sorry</button>
               </div>
             </div>
-        </div>  
+          </div>
+        </div>
+
+        <div id="modal-portion"></div>
+
+        
 
         <div class="row align-items-start text-center">
           <div class="col">
