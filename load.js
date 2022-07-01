@@ -24,6 +24,7 @@ window.onload = async () => {
         inputSymbolToTable(symbolsToLoad[i],response)
     }
     retrieveHoldings()
+    getTotalHoldings()
 }
 
 

@@ -68,6 +68,7 @@ function inputSymbolToTable(symbol, data) {
     deleteBtn.setAttribute("type", "button")
     deleteBtn.setAttribute("class", "btn-close")
     deleteBtn.setAttribute("aria-label", "Close")
+    deleteBtn.setAttribute("title", "Click to delete, check holdings before deleting!")
     deleteTd.appendChild(deleteBtn)
     tr.appendChild(newSymbol)
     tr.appendChild(lastPrice)
@@ -148,14 +149,17 @@ function removeAllChildNodes(parent) {
 
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
+  const inputValue = document.querySelector("#ticker-input")
   const response = await fetchQuoteApi(getInputValue())
   if (response === "error - no such symbol") {
       const modal = new bootstrap.Modal(document.querySelector("#error-modal"))
       modal.show()
+      inputValue.value = ""
       return
   } else {
       inputSymbolToTable(getInputValue(),response)
       saveInputValue()
+      inputValue.value = ""
   }
 })
 

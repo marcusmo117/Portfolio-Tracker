@@ -315,6 +315,7 @@ function inputSymbolToTable(symbol, data) {
     deleteBtn.setAttribute("type", "button")
     deleteBtn.setAttribute("class", "btn-close")
     deleteBtn.setAttribute("aria-label", "Close")
+    deleteBtn.setAttribute("title", "Click to delete, check holdings before deleting!")
     deleteTd.appendChild(deleteBtn)
 
     // appending data to table
@@ -343,20 +344,24 @@ function inputSymbolToTable(symbol, data) {
       // removing row in table
       event.stopPropagation()
       tr.remove()
+      location.reload()
     })
 }
 
 
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
+    const inputValue = document.querySelector("#ticker-input")
     const response = await fetchQuoteApi(getInputValue())
     if (response === "error - no such symbol") {
         const modal = new bootstrap.Modal(document.querySelector("#error-modal"))
         modal.show()
+        inputValue.value = ""
         return
     } else {
         inputSymbolToTable(getInputValue(),response)
         saveInputValue()
+        inputValue.value = ""
     }
 })
 
@@ -460,6 +465,7 @@ function retrieveHoldings() {
         // deleteInputValue(JSON.stringify(tr.id))
             deleteHoldingsRow(deleteBtn.id)     
             holdingsData.remove()
+            location.reload()
         })
         holdingsData.appendChild(holdingsDataDate)
         holdingsData.appendChild(holdingsDataShares)
@@ -498,23 +504,42 @@ function convStrCom(str) {
 }
 
 
-// // to get total holdings 
-// function getTotalHoldings() {
-//     const holdingsData = JSON.parse(localStorage.getItem("holdings"))
-//     const tickerData = JSON.parse(localStorage.getItem("tickers"))
-//     let totalHoldingsValue = 0
-//     for (iHoldings = 0; iHoldings < holdingsData; iHoldings++) {
-//         if (holdingsData[iHoldings][0] === ) {
-//             const holdingsValue = (parseFloat(holdingsData[iHoldings][2])) * (parseFloat(holdingsData[iHoldings][3]))
-//             totalHoldingsValue += holdingsValue
-//         }
-//     }
-//     return totalHoldingsValue
-// }
-
-
-
-
+// to get total holdings and % gain 
+function getTotalHoldings() {
+    const holdingsData = JSON.parse(localStorage.getItem("holdings"))
+    console.log("holdings data: " + holdingsData)
+    const tickerData = JSON.parse(localStorage.getItem("tickers"))
+    console.log("ticker data: " + tickerData)
+    let totalHoldingsValue = 0
+    let totalHoldingsCost = 0
+    let holdingsPerGain = 0
+    for (iTickers = 0; iTickers < tickerData.length; iTickers++) {
+        this["ticker"+iTickers] = tickerData[iTickers]
+        const tickerMktValue = document.getElementById(this["ticker"+iTickers] + "last-price")
+        console.log("ticker: " + this["ticker"+iTickers])
+        console.log("ticker price: " + tickerMktValue.textContent)
+        for (iHoldings = 0; iHoldings < holdingsData.length; iHoldings++) {
+            if (holdingsData[iHoldings][0] === this["ticker"+iTickers]) {
+                const holdingsValue = (parseFloat(holdingsData[iHoldings][2])) * (convStrCom(tickerMktValue.textContent))
+                const costValue = (parseFloat(holdingsData[iHoldings][2])) * (parseFloat(holdingsData[iHoldings][3]))
+                // holdingsPerGain = (holdingsValue - costValue)/ costValue 
+                console.log("ticker price: " + (convStrCom(tickerMktValue.textContent)))
+                console.log("ticker quantity: " + (parseFloat(holdingsData[iHoldings][2])))
+                console.log("ticker cost: " + (parseFloat(holdingsData[iHoldings][3])))
+                totalHoldingsValue += holdingsValue
+                totalHoldingsCost += costValue
+                console.log("cost: " + totalHoldingsCost)
+                console.log("mkt value: " + totalHoldingsValue)
+            }
+        }
+    } 
+    const totalHoldingsDom = document.querySelector("#total-holdings-value")
+    totalHoldingsDom.textContent = "Total holdings: $" + toMakeNum(roundToTwo((parseFloat(totalHoldingsValue))))
+    holdingsPerGain = ((totalHoldingsValue - totalHoldingsCost)/ totalHoldingsCost) * 100
+    console.log("% gain: " + holdingsPerGain)
+    const totalHoldignsPerDom = document.querySelector("#total-holdings-gain")
+    totalHoldignsPerDom.textContent = "Total gain: " + toMakeNum(roundToTwo((holdingsPerGain))) + "%"
+}
 
 
 

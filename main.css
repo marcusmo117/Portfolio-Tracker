@@ -52,4 +52,16 @@ nav {
     font-family: 'EB Garamond', serif; 
 }
 
+#news-list {
+    font-family: 'EB Garamond', serif
+}
+
+
+h4 {
+    padding-top: 5%;
+}
+
+
+
+
 /* stick nav bar + collapse into list */
