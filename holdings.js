@@ -339,16 +339,18 @@ function inputSymbolToTable(symbol, data) {
     deleteBtn.addEventListener("click", (event) => {
         const holdingsStorage1 = JSON.parse(localStorage.getItem("holdings"))
         console.log(holdingsStorage1)
-        for (let iholding = 0; iholding < holdingsStorage1.length; iholding++) {
-            console.log("holdings tickers: " + holdingsStorage1[iholding][0])
-            console.log("tr id: " + tr.id)
-            if (holdingsStorage1[iholding][0] === tr.id) {
-                const modal = new bootstrap.Modal(document.querySelector("#error-modal-holdings"))
-                modal.show()
-                return
+        if (holdingsStorage1) {
+            for (let iholding = 0; iholding < holdingsStorage1.length; iholding++) {
+                console.log("holdings tickers: " + holdingsStorage1[iholding][0])
+                console.log("tr id: " + tr.id)
+                if (holdingsStorage1[iholding][0] === tr.id) {
+                    const modal = new bootstrap.Modal(document.querySelector("#error-modal-holdings"))
+                    modal.show()
+                    return
+                }
             }
         }
-
+        
       // removing ticker from local storage 
       deleteInputValue(JSON.stringify(tr.id))
 
@@ -363,14 +365,16 @@ function inputSymbolToTable(symbol, data) {
 document.querySelector("#button").addEventListener("click", async() => {
     const inputValue = document.querySelector("#ticker-input")
     const tickerStorage = JSON.parse(localStorage.getItem("tickers"))
-    for (let iInput = 0; iInput < tickerStorage.length; iInput++) {
-        console.log("inputvalue: " + inputValue.value)
-        console.log(tickerStorage[iInput])
-        if (tickerStorage[iInput] === inputValue.value) {
-            const modal = new bootstrap.Modal(document.querySelector("#error-modal-repeat"))
-            modal.show()
-            inputValue.value = ""
-            return
+    if (tickerStorage) {
+        for (let iInput = 0; iInput < tickerStorage.length; iInput++) {
+            console.log("inputvalue: " + inputValue.value)
+            console.log(tickerStorage[iInput])
+            if (tickerStorage[iInput] === inputValue.value) {
+                const modal = new bootstrap.Modal(document.querySelector("#error-modal-repeat"))
+                modal.show()
+                inputValue.value = ""
+                return
+            }
         }
     }
     const response = await fetchQuoteApi(getInputValue())
