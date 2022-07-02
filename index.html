@@ -36,7 +36,7 @@
       </div>
     </div>
   </nav>
-    <div class="container">
+    <div id="overall-container" class="container">
       <header id="page-header" class="mt-3 mb-5 text-center">
           <h1>STONKS TRACKER</h1>
       </header>
@@ -83,6 +83,40 @@
               </div>
               <div class="modal-body">
                 NOT A VALID SYMBOL!!
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">I won't do it again</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="error-modal-repeat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Error!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                REPEAT SYMBOL!
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">I won't do it again</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="error-modal-holdings" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Error!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Unable to delete stock, please delete current holdings first!
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">I won't do it again</button>

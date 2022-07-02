@@ -337,6 +337,17 @@ function inputSymbolToTable(symbol, data) {
 
     // adding delete button functionality
     deleteBtn.addEventListener("click", (event) => {
+        const holdingsStorage1 = JSON.parse(localStorage.getItem("holdings"))
+        console.log(holdingsStorage1)
+        for (let iholding = 0; iholding < holdingsStorage1.length; iholding++) {
+            console.log("holdings tickers: " + holdingsStorage1[iholding][0])
+            console.log("tr id: " + tr.id)
+            if (holdingsStorage1[iholding][0] === tr.id) {
+                const modal = new bootstrap.Modal(document.querySelector("#error-modal-holdings"))
+                modal.show()
+                return
+            }
+        }
 
       // removing ticker from local storage 
       deleteInputValue(JSON.stringify(tr.id))
@@ -344,7 +355,6 @@ function inputSymbolToTable(symbol, data) {
       // removing row in table
       event.stopPropagation()
       tr.remove()
-      location.reload()
     })
 }
 
@@ -352,6 +362,17 @@ function inputSymbolToTable(symbol, data) {
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
     const inputValue = document.querySelector("#ticker-input")
+    const tickerStorage = JSON.parse(localStorage.getItem("tickers"))
+    for (let iInput = 0; iInput < tickerStorage.length; iInput++) {
+        console.log("inputvalue: " + inputValue.value)
+        console.log(tickerStorage[iInput])
+        if (tickerStorage[iInput] === inputValue.value) {
+            const modal = new bootstrap.Modal(document.querySelector("#error-modal-repeat"))
+            modal.show()
+            inputValue.value = ""
+            return
+        }
+    }
     const response = await fetchQuoteApi(getInputValue())
     if (response === "error - no such symbol") {
         const modal = new bootstrap.Modal(document.querySelector("#error-modal"))
@@ -507,41 +528,43 @@ function convStrCom(str) {
 // to get total holdings and % gain 
 function getTotalHoldings() {
     const holdingsData = JSON.parse(localStorage.getItem("holdings"))
-    console.log("holdings data: " + holdingsData)
     const tickerData = JSON.parse(localStorage.getItem("tickers"))
-    console.log("ticker data: " + tickerData)
     let totalHoldingsValue = 0
     let totalHoldingsCost = 0
     let holdingsPerGain = 0
     for (iTickers = 0; iTickers < tickerData.length; iTickers++) {
         this["ticker"+iTickers] = tickerData[iTickers]
         const tickerMktValue = document.getElementById(this["ticker"+iTickers] + "last-price")
-        console.log("ticker: " + this["ticker"+iTickers])
-        console.log("ticker price: " + tickerMktValue.textContent)
         for (iHoldings = 0; iHoldings < holdingsData.length; iHoldings++) {
             if (holdingsData[iHoldings][0] === this["ticker"+iTickers]) {
                 const holdingsValue = (parseFloat(holdingsData[iHoldings][2])) * (convStrCom(tickerMktValue.textContent))
                 const costValue = (parseFloat(holdingsData[iHoldings][2])) * (parseFloat(holdingsData[iHoldings][3]))
                 // holdingsPerGain = (holdingsValue - costValue)/ costValue 
-                console.log("ticker price: " + (convStrCom(tickerMktValue.textContent)))
-                console.log("ticker quantity: " + (parseFloat(holdingsData[iHoldings][2])))
-                console.log("ticker cost: " + (parseFloat(holdingsData[iHoldings][3])))
                 totalHoldingsValue += holdingsValue
                 totalHoldingsCost += costValue
-                console.log("cost: " + totalHoldingsCost)
-                console.log("mkt value: " + totalHoldingsValue)
-            }
         }
     } 
     const totalHoldingsDom = document.querySelector("#total-holdings-value")
     totalHoldingsDom.textContent = "Total holdings: $" + toMakeNum(roundToTwo((parseFloat(totalHoldingsValue))))
     holdingsPerGain = ((totalHoldingsValue - totalHoldingsCost)/ totalHoldingsCost) * 100
-    console.log("% gain: " + holdingsPerGain)
     const totalHoldignsPerDom = document.querySelector("#total-holdings-gain")
     totalHoldignsPerDom.textContent = "Total gain: " + toMakeNum(roundToTwo((holdingsPerGain))) + "%"
-}
+}}
 
+// enter function on add symbol
+// Get the input field
+var input = document.getElementById("ticker-input");
 
+// Execute a function when the user presses a key on the keyboard
+input.addEventListener("keypress", function(event) {
+  // If the user presses the "Enter" key on the keyboard
+  if (event.key === "Enter") {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    document.getElementById("button").click();
+  }
+});
 
 
 

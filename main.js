@@ -115,6 +115,18 @@ function inputSymbolToTable(symbol, data) {
 
     // adding delete button 
     deleteBtn.addEventListener("click", (event) => {
+      const holdingsStorage1 = JSON.parse(localStorage.getItem("holdings"))
+      console.log(holdingsStorage1)
+      for (let iholding = 0; iholding < holdingsStorage1.length; iholding++) {
+          console.log("holdings tickers: " + holdingsStorage1[iholding][0])
+          console.log("tr id: " + tr.id)
+          if (holdingsStorage1[iholding][0] === tr.id) {
+              const modal = new bootstrap.Modal(document.querySelector("#error-modal-holdings"))
+              modal.show()
+              event.stopPropagation()
+              return
+          }
+      }
 
       // removing ticker from local storage 
       deleteInputValue(JSON.stringify(tr.id))
@@ -150,6 +162,17 @@ function removeAllChildNodes(parent) {
 // Add symbol button
 document.querySelector("#button").addEventListener("click", async() => {
   const inputValue = document.querySelector("#ticker-input")
+  const tickerStorage = JSON.parse(localStorage.getItem("tickers"))
+  for (let iInput = 0; iInput < tickerStorage.length; iInput++) {
+      console.log("inputvalue: " + inputValue.value)
+      console.log(tickerStorage[iInput])
+      if (tickerStorage[iInput] === inputValue.value) {
+          const modal = new bootstrap.Modal(document.querySelector("#error-modal-repeat"))
+          modal.show()
+          inputValue.value = ""
+          return
+      }
+  }
   const response = await fetchQuoteApi(getInputValue())
   if (response === "error - no such symbol") {
       const modal = new bootstrap.Modal(document.querySelector("#error-modal"))
@@ -344,8 +367,20 @@ function convStrCom(str) {
 }
 
 
+// enter function on add symbol
+// Get the input field
+var input = document.getElementById("ticker-input");
 
-
+// Execute a function when the user presses a key on the keyboard
+input.addEventListener("keypress", function(event) {
+  // If the user presses the "Enter" key on the keyboard
+  if (event.key === "Enter") {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    document.getElementById("button").click();
+  }
+});
 
 
 

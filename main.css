@@ -61,7 +61,9 @@ h4 {
     padding-top: 5%;
 }
 
-
+#overall-container {
+    padding-bottom: 3%;
+}
 
 
 /* stick nav bar + collapse into list */
