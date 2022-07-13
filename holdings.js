@@ -197,6 +197,21 @@ function inputSymbolToTable(symbol, data) {
     modBodyInp3.appendChild(modBodyInp3Text)
     modBodyInp3.appendChild(modBodyInp3Label)
     modBody.appendChild(modBodyInp3)
+     const modBodyInp4 = document.createElement("form")
+        modBodyInp4.setAttribute("class", "form-floating mb-3")
+    const modBodyInp4Text = document.createElement("input")
+        modBodyInp4Text.setAttribute("type", "text")
+        // modBodyInp3Text.setAttribute("type", "reset")
+        modBodyInp4Text.setAttribute("class", "form-control")
+        modBodyInp4Text.setAttribute("id", symbol+"Category")
+        modBodyInp4Text.setAttribute("placeholder", "Category")
+        // modBodyInp4Text.setAttribute("value", "Category")
+    const modBodyInp4Label = document.createElement("label")
+        modBodyInp4Label.setAttribute("for", "Category")
+        modBodyInp4Label.textContent = "Category:"
+    modBodyInp4.appendChild(modBodyInp4Text)
+    modBodyInp4.appendChild(modBodyInp4Label)
+    modBody.appendChild(modBodyInp4)
     const modFooter = document.createElement("div")
         modFooter.setAttribute("class", "modal-footer")
     const modFooterbtn1 = document.createElement("button")
@@ -421,11 +436,13 @@ function saveModal(symbol) {
     const saveTradeDate = document.getElementById(symbol+"DateInputValue").value
     const saveShares = document.getElementById(symbol+"SharesInputValue").value
     const saveCost = document.getElementById(symbol+"CostInputValue").value
+    const saveCat = document.getElementById(symbol+"Category").value
     const uuid = crypto.randomUUID()
     array.push(symbol)
     array.push(saveTradeDate)
     array.push(saveShares)
     array.push(saveCost)
+    array.push(saveCat)
     array.push(uuid)
     if (existingData === null){
         existingData = []
@@ -571,7 +588,65 @@ input.addEventListener("keypress", function(event) {
 });
 
 
+const ctxLeft = document.getElementById('myChartLeft').getContext('2d');
+const myChartLeft = new Chart(ctxLeft, {
+    type: 'pie',
+    data: {
+        labels: [
+            'Red',
+            'Blue',
+            'Yellow'
+          ],
+          datasets: [{
+            label: 'My First Dataset',
+            data: [300, 50, 100],
+            backgroundColor: [
+              'rgb(255, 99, 132)',
+              'rgb(54, 162, 235)',
+              'rgb(255, 205, 86)'
+            ],
+            hoverOffset: 4
+          }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
 
+
+const ctxRight = document.getElementById('myChartRight').getContext('2d');
+const myChartRight = new Chart(ctxRight, {
+    type: 'line',
+    data: {
+        labels: [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul'
+        ],
+        datasets: [{
+          label: 'My First Dataset',
+          data: [65, 59, 80, 81, 56, 55, 40],
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
 
 
 
